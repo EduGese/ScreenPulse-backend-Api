@@ -7,8 +7,9 @@ const _router= express.Router();
 _router.post('/favorites', async (req, res) =>{
     try {
         const favorites = await favoritesSchema.create(req.body);
-        favorites.save()
-        .then((data) => res.json(data));
+        favorites.save();
+        res.send(favorites);
+       
     } catch (error: any) {
         throw new Error(error);
     }
