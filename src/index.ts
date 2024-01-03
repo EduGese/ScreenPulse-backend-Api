@@ -11,7 +11,7 @@ const port = config.server.port;
 // app.get('/', (req: Request, res: Response) => {
 //   res.send('Welcome to my API :)');
 // });
-
+app.use(express.json());
 app.use('/api', router);
 
 
