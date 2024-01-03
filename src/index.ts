@@ -1,16 +1,18 @@
 import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import config from './config/config';
-
+import { router } from './routes/favorites';
 //execute express
 const app = express();
 const port = config.server.port;
 
 
 //routes
-app.get('/', (req: Request, res: Response) => {
-  res.send('Welcome to my API :)');
-});
+// app.get('/', (req: Request, res: Response) => {
+//   res.send('Welcome to my API :)');
+// });
+
+app.use('/api', router);
 
 
 // server listenening on config.server.port
