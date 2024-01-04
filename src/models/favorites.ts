@@ -1,4 +1,5 @@
 import mongoose , {Schema} from 'mongoose';
+import { Favorites } from '../interfaces/favorites.interface';
 
 const favoritesSchema: Schema = new mongoose.Schema({
     title: {
@@ -28,4 +29,4 @@ const favoritesSchema: Schema = new mongoose.Schema({
 });
 
 
-export default mongoose.model('Favorites', favoritesSchema);
+export default mongoose.model<Favorites>('Favorites', favoritesSchema);
