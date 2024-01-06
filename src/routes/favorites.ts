@@ -1,55 +1,23 @@
 import express from 'express';
 import favoritesSchema from '../models/favorites';
+import favoritesController from '../controllers/favorites.controller';
 
 const _router= express.Router();
 
 //Create 
-_router.post('/favorites', async (req, res) =>{
-    try {
-        const favorites = await favoritesSchema.create(req.body);
-        favorites.save();
-        res.send(favorites);
-       
-    } catch (error: any) {
-        throw new Error(error);
-    }
-});
+_router.post('/favorites', favoritesController.createFavorite);
+
 //Get all
-_router.get('/favorites', async (req, res) =>{
-    try {
-        const favorites = await favoritesSchema.find();
-        res.send(favorites);
-    } catch (error: any) {
-        throw new Error(error);
-    }
-});
+_router.get('/favorites', favoritesController.getFavorites);
+
 //Get by Id
-_router.get('/favorites/:id', async (req, res) =>{
-    try {
-        const favorites = await favoritesSchema.findById(req.params.id);
-        res.send(favorites);
-    } catch (error: any) {
-        throw new Error(error);
-    }
-});
+_router.get('/favorites/:id', favoritesController.getFavoriteById);
+
 //Delete by Id
-_router.delete('/favorites/:id', async (req, res) =>{
-    try {
-        const favorites = await favoritesSchema.findByIdAndDelete(req.params.id);
-        res.send(favorites);
-    } catch (error: any) {
-        throw new Error(error);
-    }
-});
+_router.delete('/favorites/:id', favoritesController.deleteFavorite);
+
 //Update by Id
-_router.put('/favorites/:id', async (req, res) =>{
-    try {
-        const favorites = await favoritesSchema.findByIdAndUpdate(req.params.id, req.body);
-        res.send(favorites);
-    } catch (error: any) {
-        throw new Error(error);
-    }
-});
+_router.put('/favorites/:id', favoritesController.updateFavorite);
+
 
 export const router = _router;
-
