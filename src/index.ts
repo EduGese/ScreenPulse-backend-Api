@@ -2,15 +2,21 @@ import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import config from './config/config';
 import { router } from './routes/favorites';
+import cors from 'cors';
 //execute express
 const app = express();
 const port = config.server.port;
 
+//CORS
+var corsOptions = {
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204,
+  maxAge: 500
+}
+app.use(cors(corsOptions));
 
 //routes
-// app.get('/', (req: Request, res: Response) => {
-//   res.send('Welcome to my API :)');
-// });
 app.use(express.json());
 app.use('/api', router);
 
