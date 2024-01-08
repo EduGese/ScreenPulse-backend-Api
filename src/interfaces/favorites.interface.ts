@@ -1,8 +1,8 @@
 import { Document } from 'mongoose';
 
 export interface Favorites extends Document {
-  title: string;
-  year: string;
+  Title: string;
+  Year: string;
   imdbID: string;
   Type: string;
   Poster: string;

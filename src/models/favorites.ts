@@ -2,11 +2,11 @@ import mongoose , {Schema} from 'mongoose';
 import { Favorites } from '../interfaces/favorites.interface';
 
 const favoritesSchema: Schema = new mongoose.Schema({
-    title: {
+    Title: {
         type: String,
         required: true
     },
-    year: {
+    Year: {
         type: String,
         required: true
     },
