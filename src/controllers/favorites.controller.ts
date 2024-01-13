@@ -20,6 +20,14 @@ class FavoritesController {
         const error = new Error('A non-empty JSON body is mandatory.');
         return next(error);
       }
+      const { imdbID } = req.body;
+
+      const existingFavorite = await favoritesSchema.findOne({ imdbID });
+  
+      if (existingFavorite) {
+       res.status(400).json({ message: 'Element duplicated' });
+       return;
+      }
       const favorites: Favorites = await favoritesSchema.create(req.body);
       res.status(201).json({ message: 'Element saved succesfully', data: favorites });
     } catch (error) {
@@ -74,7 +82,7 @@ class FavoritesController {
      */
   async deleteFavorite(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const favorites: any = await favoritesSchema.findByIdAndDelete(req.params.id);
+      await favoritesSchema.findByIdAndDelete(req.params.id);
       res.status(204).json({ message: 'Element deleted successfully', data: {} });
     } catch (error) {
       next(error);
@@ -96,8 +104,10 @@ class FavoritesController {
         const error = new Error('A non-empty JSON body is mandatory.');
         return next(error);
       }
-      const favorites = await favoritesSchema.findByIdAndUpdate( req.params.id,req.body );
-      res.status(204).json({ message: 'Element updated successfully', data: {} });
+      const documentId = req.params.id;
+      const updatedData = { description: req.body.description };
+      await favoritesSchema.updateOne( { _id: documentId },updatedData );
+      res.status(204).json({ message: 'Element updated successfully'});
     } catch (error) {
       next(error);
       return;
@@ -106,29 +116,3 @@ class FavoritesController {
 }
 
 export default new FavoritesController();
-/*
-El código general parece estar en buena forma. Sin embargo, aquí hay algunas sugerencias y observaciones que 
-podrían ayudar a mejorar la implementación de tus rutas:
-
----Manejo de errores--
-En lugar de lanzar un error directamente, sería mejor manejar los errores de manera más explícita 
-y devolver una respuesta adecuada al cliente. Puedes usar el método next() con error para pasar los errores 
-a un middleware de manejo de errores o simplemente enviar una respuesta con el código de estado y un mensaje descriptivo.
-
---Validación de datos--
-Podrías agregar validaciones para asegurarte de que los datos proporcionados en las solicitudes sean correctos 
-antes de realizar operaciones como create, update o delete.
-
---Mensajes de estado en las respuestas--
-Sería útil proporcionar mensajes descriptivos en las respuestas, especialmente en las operaciones de create, 
-update y delete, para informar al cliente sobre el estado de la operación realizada.
-
---Uso de try-catch en operaciones de base de datos--
-En las operaciones de la base de datos, el uso de try-catch es una buena práctica. Asegúrate de manejar los
- errores de la base de datos correctamente y proporcionar una respuesta adecuada en caso de fallo.
-
---Seguridad y autenticación--
-No se observa ningún control de acceso o autenticación en estas rutas. Si tu aplicación requiere autorización,
-debes asegurarte de implementar métodos de autenticación antes de permitir el acceso a las operaciones de la base de datos.
-
-*/
