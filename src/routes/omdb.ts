@@ -6,7 +6,7 @@ const _router= express.Router();
 
 
 //Get all Movies from omdb API
-_router.get('/omdb', omdbController.getOmdbMovies);
+_router.post('/omdb', omdbController.getOmdbMovies);
 
 
-export const router = _router;
+export const router2 = _router;

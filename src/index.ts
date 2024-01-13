@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import config from './config/config';
 import { router } from './routes/favorites';
 import cors from 'cors';
+import { router2 } from './routes/omdb';
 //execute express
 const app = express();
 const port = config.server.port;
@@ -19,6 +20,7 @@ app.use(cors(corsOptions));
 //routes
 app.use(express.json());
 app.use('/api', router);
+app.use('/api2', router2);
 
 
 // server listenening on config.server.port
