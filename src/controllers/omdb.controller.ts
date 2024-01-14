@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import axios from "axios";
-import dotenv from 'dotenv';
+import axios, { AxiosResponse } from "axios";
+import { OmdbResponse } from "../interfaces/omdb.interface";
+
 
 
 
@@ -24,20 +25,17 @@ class OmdbController {
             return next(error);
           }
 
-        axios.get('http://www.omdbapi.com/' , {
+          const response: AxiosResponse<OmdbResponse> =  await axios.get('http://www.omdbapi.com/' , {
             params:{
               apikey: process.env.OMDB_APIKEY,
               s: req.body.s,
               type: req.body.type,
               y: req.body.y
             }
-          })
-        .then((response) => {
-          res.status(200).json(response.data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+          });
+          const omdbResponse: OmdbResponse = response.data;
+          res.status(200).json(omdbResponse);
+
     } catch (error) {
       next(error);
       return;
