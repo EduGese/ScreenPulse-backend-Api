@@ -13,7 +13,8 @@ var corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 204,
-  maxAge: 500
+  maxAge: 500,
+  origin: config.client.url,
 }
 app.use(cors(corsOptions));
 
