@@ -26,6 +26,11 @@ const favoritesSchema: Schema = new mongoose.Schema({
     description: {
         type: String,
         required: false
+    },
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 });
 
