@@ -12,6 +12,16 @@ const MONGODB_URL = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB
 
 const SERVER_PORT = process.env.PORT ? Number(process.env.PORT) : 9000;
 
+let CLIENT_URL = ''
+
+//CORS ENV
+if(process.env.NODE_ENV ==='production'){
+ CLIENT_URL = process.env.CLIENT_URL_PROD || '';
+
+}else{
+ CLIENT_URL = process.env.CLIENT_URL_DEV || '';
+}
+
 //config object
 
 const config = {
@@ -20,6 +30,9 @@ const config = {
     },
     server: {
         port: SERVER_PORT
+    },
+    client: {
+        url: CLIENT_URL,
     }
 }
 
