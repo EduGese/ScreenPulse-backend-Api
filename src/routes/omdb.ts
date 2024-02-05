@@ -9,4 +9,4 @@ const _router= express.Router();
 _router.post('/omdb', omdbController.getOmdbMovies);
 
 
-export const router2 = _router;
+export const routerOmdb = _router;

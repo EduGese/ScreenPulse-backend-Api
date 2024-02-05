@@ -1,9 +1,13 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
-import config from './config/config';
-import { router } from './routes/favorites';
+
 import cors from 'cors';
-import { router2 } from './routes/omdb';
+
+import config from './config/config';
+import { routerOmdb } from './routes/omdb';
+import { routerUsers } from './routes/user';
+import { routerFavorites } from './routes/favorites';
+
 //execute express
 const app = express();
 const port = config.server.port;
@@ -20,8 +24,7 @@ app.use(cors(corsOptions));
 
 //routes
 app.use(express.json());
-app.use('/api', router);
-app.use('/api2', router2);
+app.use('/api', routerFavorites, routerOmdb, routerUsers);
 
 
 // server listenening on config.server.port
