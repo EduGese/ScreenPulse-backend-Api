@@ -1,6 +1,6 @@
 import express from "express";
 
-import userController from "../controllers/user.controller";
+import userController from "./user.controller";
 
 const _router = express.Router();
 
@@ -12,4 +12,4 @@ _router.post("/user/login", userController.loginUser);
 //Register
 _router.post("/user/register", userController.registertUser);
 
-export const routerUsers = _router;
+export const router = _router;

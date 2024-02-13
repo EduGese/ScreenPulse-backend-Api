@@ -1,5 +1,5 @@
 import express from 'express';
-import omdbController from '../controllers/omdb.controller';
+import omdbController from './omdb.controller';
 
 
 const _router= express.Router();
@@ -9,4 +9,4 @@ const _router= express.Router();
 _router.post('/omdb', omdbController.getOmdbMovies);
 
 
-export const routerOmdb = _router;
+export const router = _router;

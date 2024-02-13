@@ -1,15 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import axios, { AxiosResponse } from "axios";
-import { OmdbResponse } from "../interfaces/omdb.interface";
 
-
-
+import { OmdbResponse } from "../../interfaces/omdb.interface";
+import omdbService from "./omdb.service";
 
 
 class OmdbController {
     
-
-
     /**
      * @summary Find documents from a collection 
      * @description Get documents
@@ -25,24 +21,14 @@ class OmdbController {
             return next(error);
           }
 
-          const response: AxiosResponse<OmdbResponse> =  await axios.get('http://www.omdbapi.com/' , {
-            params:{
-              apikey: process.env.OMDB_APIKEY,
-              s: req.body.s,
-              type: req.body.type,
-              y: req.body.y
-            }
-          });
-          const omdbResponse: OmdbResponse = response.data;
+          const omdbResponse: OmdbResponse = await omdbService.getOmdbMovies(req.body);
           res.status(200).json(omdbResponse);
 
     } catch (error) {
       next(error);
       return;
     }
-  }
-
-   
+  }  
 }
 
 export default new OmdbController();

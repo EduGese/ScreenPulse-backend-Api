@@ -1,6 +1,6 @@
 import express from 'express';
 
-import favoritesController from '../controllers/favorites.controller';
+import favoritesController from './favorites.controller';
 
 const _router= express.Router();
 
@@ -20,4 +20,4 @@ _router.delete('/favorites/:id', favoritesController.deleteFavorite);
 _router.put('/favorites/:id', favoritesController.updateFavorite);
 
 
-export const routerFavorites = _router;
+export const router = _router;
