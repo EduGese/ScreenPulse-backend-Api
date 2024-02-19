@@ -8,10 +8,10 @@ const _router= express.Router();
 _router.post('/favorites', favoritesController.createFavorite);
 
 //Get all
-_router.get('/favorites', favoritesController.getFavorites);
+_router.get('/favorites/:id', favoritesController.getFavorites);
 
 //Get by Id
-_router.get('/favorites/:id', favoritesController.getFavoriteById);
+//_router.get('/favorites/:id', favoritesController.getFavoriteById);
 
 //Delete by Id
 _router.delete('/favorites/:id', favoritesController.deleteFavorite);

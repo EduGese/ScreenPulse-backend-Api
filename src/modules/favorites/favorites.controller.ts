@@ -21,10 +21,14 @@ class FavoritesController {
         const error = new Error('A non-empty JSON body is mandatory.');
         return next(error);
       }
-      const createdFavorite = await favoritesService.createFavorite(req.body)
+      const createdFavorite = await favoritesService.createFavorite(req.body.user, req.body.movie)
       res.status(201).json({ message: 'Element saved succesfully', data: createdFavorite });
-    } catch (error) {
-         next(error);
+    } catch (error:any) {
+        //  next(error);
+         // Manejo de errores
+         const status = error.status || 500; // Si no se proporciona un código de estado, se establece el código de estado 500 por defecto
+         const message = error.message || 'Internal Server Error'; // Si no se proporciona un mensaje de error, se establece un mensaje predeterminado
+         res.status(status).json({ error: message });
       }
     
     }
@@ -40,10 +44,12 @@ class FavoritesController {
      */
   async getFavorites(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const favorites: Favorites[] = await favoritesService.getFavorites();
+      
+      const favorites: Favorites[] = await favoritesService.getFavorites(req.params.id);
       res.status(200).json(favorites);
-    } catch (error) {
-      next(error);
+    } catch (error:any) {
+      //next(error);
+      res.status(404).json(error.message);
       return;
     }
   }
@@ -56,15 +62,15 @@ class FavoritesController {
      * @param {express.Next} next is the middleware to continue with code execution
      * @returns {Array} with all documents matching the conditions
      */
-  async getFavoriteById(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const favorite: any = await favoritesService.getFavoriteById(req.params.id);
-      res.status(200).json({ message: 'Element retrieved successfully', data: favorite });
-    } catch (error) {
-      next(error);
-      return;
-    }
-  }
+  // async getFavoriteById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  //   try {
+  //     const favorite: any = await favoritesService.getFavoriteById(req.params.id);
+  //     res.status(200).json({ message: 'Element retrieved successfully', data: favorite });
+  //   } catch (error) {
+  //     next(error);
+  //     return;
+  //   }
+  // }
 
   /**
      * @summary Delete a document
