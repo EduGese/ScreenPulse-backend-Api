@@ -12,7 +12,7 @@ class UserController {
       res.json(response);
     } catch (error:any) {
       res.status(400).json({ error: error.message });
-      //next(error);No se bien todavia como usar next
+      //next(error);
     }
   }
 
