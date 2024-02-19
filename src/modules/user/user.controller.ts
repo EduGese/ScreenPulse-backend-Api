@@ -11,8 +11,8 @@ class UserController {
       const response = await UserService.loginUser(email, password);
       res.json(response);
     } catch (error:any) {
-      //res.json({ error: error.message });
-      next(error);
+      res.status(400).json({ error: error.message });
+      //next(error);No se bien todavia como usar next
     }
   }
 
@@ -21,8 +21,8 @@ class UserController {
       const response = await UserService.registerUser(req.body);
       res.json(response);
     } catch (error: any) {
-      // res.json({ error: error.message });
-      next(error);
+      res.status(400).json({ error: error.message });
+      // next(error);
     }
   }
 }
