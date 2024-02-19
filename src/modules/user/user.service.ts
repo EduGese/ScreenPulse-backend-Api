@@ -9,8 +9,7 @@ class UserService {
     if (!user || !bcriptjs.compareSync(password, user.password)) {//Checks: 1º if finds user 2º if password is correct
       throw new Error("Error in mail or password"); //Throw error if fails;
     }
-
-    return { success: "Login OK", token: UserService.createToken(user) }; //Return object with token if succeed
+    return { success: "Login OK", token: UserService.createToken(user), user: user}; //Return object with token if succeed
   }
 
    async registerUser(userData:User) {
