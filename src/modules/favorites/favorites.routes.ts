@@ -14,7 +14,7 @@ _router.get('/favorites/:id', favoritesController.getFavorites);
 //_router.get('/favorites/:id', favoritesController.getFavoriteById);
 
 //Delete by Id
-_router.delete('/favorites/:id', favoritesController.deleteFavorite);
+_router.delete('/favorites/:id/:userId', favoritesController.deleteFavorite);
 
 //Update by Id
 _router.put('/favorites/:id', favoritesController.updateFavorite);

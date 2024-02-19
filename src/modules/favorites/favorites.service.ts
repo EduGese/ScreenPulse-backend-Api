@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 import { Favorites } from "../../interfaces/favorites.interface";
 import favoritesSchema from "../../models/favorites";
 import userSchema from "../../models/user";
@@ -45,7 +46,7 @@ class FavoritesService {
     
     const favorites = await favoritesSchema.find({ user: userId });
     if (!favorites || favorites.length === 0) {
-      throw new Error("Favorites not found for this user");
+      throw new Error("Not favorites saved");
     }
     console.log('Usuario:', userId)
     console.log(favorites);
@@ -58,10 +59,33 @@ class FavoritesService {
   //   }
   //   return favorite;
   // }
-  async deleteFavorite(id: string): Promise<any> {
-    const result = await favoritesSchema.findByIdAndDelete(id);
-    if (!result) {
-      throw new Error("Element could not be deleted because not found");
+  async deleteFavorite(movieId: string, userId: string): Promise<any> {
+  
+    const user = await userSchema.findById(userId);
+    if(!user){
+      throw new Error("User not found");
+    }
+    /*Eliminar movie del array de favorites del usuario y actualizar*/ 
+    const favoritesArray = user.favorites.filter(favorite => favorite.toString() !== movieId);
+    user.favorites = favoritesArray;
+    await user.save();
+
+
+     const favorite = await favoritesSchema.findById(movieId);
+    if(!favorite){
+      throw new Error("Favorite not found");
+    }
+    
+    /*Eliminar el id del usuario del array de id's de la movie y actualizar */
+    const usersArray =  favorite.user.filter((user: { toString: () => string; }) => user.toString() !== userId);
+    favorite.user = usersArray;
+    await favorite.save();
+
+    /* Eliminar el favorito de la coleccion favorites, si no es favorito de ningun usuario mas*/
+     const favoriteUsers = favorite.user.length;
+    console.log('Numero de usuarios de este favorito',favoriteUsers);
+    if(favoriteUsers === 0){
+      await favoritesSchema.findByIdAndDelete(movieId);
     }
   }
   async updateFavorite(id: string, description: string): Promise<any> {

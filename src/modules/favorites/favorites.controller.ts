@@ -82,10 +82,10 @@ class FavoritesController {
      */
   async deleteFavorite(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      await favoritesService.deleteFavorite(req.params.id);
+      await favoritesService.deleteFavorite(req.params.id, req.params.userId);
       res.status(200).json({ message: 'Element deleted successfully', data: {} });
     } catch (error) {
-      next(error);
+      //next(error);
       return;
     }
   }
