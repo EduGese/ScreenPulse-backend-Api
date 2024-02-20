@@ -40,6 +40,8 @@ class FavoritesService {
     await user.save();
     return favorite;
   }
+
+
   async getFavorites(userId: string): Promise<any> {
     const user = await userSchema.findById(userId);
     if (!user) {
@@ -64,13 +66,8 @@ class FavoritesService {
 
     return favorites;
   }
-  // async getFavoriteById(id: string): Promise<any> {
-  //   const favorite = await favoritesSchema.findById(id);
-  //   if (!favorite) {
-  //     throw new Error("Favorite not found");
-  //   }
-  //   return favorite;
-  // }
+
+
   async deleteFavorite(movieId: string, userId: string): Promise<any> {
   
     const user = await userSchema.findById(userId);
@@ -100,6 +97,8 @@ class FavoritesService {
       await favoritesSchema.findByIdAndDelete(movieId);
     }
   }
+
+
   async updateFavorite(movieId: string, userId:string, description: string): Promise<any> {
      // Buscar o crear la descripción para el usuario y la película específicos
      let existingDescription = await descriptionSchema.findOne({ userId, favoriteId: movieId });
@@ -117,10 +116,9 @@ class FavoritesService {
 
      // Agregar la referencia de la descripción al array 'descriptions' en el documento de la película favorita
      await favoritesSchema.findByIdAndUpdate(movieId, { $addToSet: { descriptions: existingDescription._id } });
-
-   
   }
 
+  
   async getDescriptions(userId: string, favoriteId: string): Promise<any> {
     const descriptions = await descriptionSchema.find({ userId, favoriteId });
     return descriptions; // Devolver las descripciones encontradas o una lista vacía si no hay ninguna.

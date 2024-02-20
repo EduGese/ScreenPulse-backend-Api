@@ -61,23 +61,6 @@ class FavoritesController {
     }
   }
 
-    /**
-     * @summary Find document by its id from a collection
-     * @description Get document
-     * @param {express.Request} req is the request of the operation
-     * @param {express.Response} res is the response of the operation
-     * @param {express.Next} next is the middleware to continue with code execution
-     * @returns {Array} with all documents matching the conditions
-     */
-  // async getFavoriteById(req: Request, res: Response, next: NextFunction): Promise<void> {
-  //   try {
-  //     const favorite: any = await favoritesService.getFavoriteById(req.params.id);
-  //     res.status(200).json({ message: 'Element retrieved successfully', data: favorite });
-  //   } catch (error) {
-  //     next(error);
-  //     return;
-  //   }
-  // }
 
   /**
      * @summary Delete a document
