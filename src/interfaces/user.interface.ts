@@ -4,6 +4,6 @@ export interface User extends Document{
     name: string,
     email: string,
     password: string,
-    role: string
-    favorites: Types.ObjectId[], 
+    role: string,
+    favorites: Types.ObjectId[]
 }

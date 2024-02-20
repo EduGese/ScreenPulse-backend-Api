@@ -1,7 +1,8 @@
-import { ObjectId } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 import { Favorites } from "../../interfaces/favorites.interface";
 import favoritesSchema from "../../models/favorites";
 import userSchema from "../../models/user";
+import descriptionSchema from "../../models/description";
 
 class FavoritesService {
   async createFavorite(userId: string, movie: Favorites): Promise<any> {
@@ -16,10 +17,12 @@ class FavoritesService {
     const existingFavorite = await favoritesSchema.findOne({
       imdbID: movie.imdbID,
     });
-
+    const userIdObjectId = new Types.ObjectId(userId);//Conversion a type ObjectId
+    console.log('userIdObjectId',userIdObjectId);
+    console.log('movie',movie)
     if (!existingFavorite) {
       // Si el favorito no existe, lo creamos y lo añadimos a la lista de favoritos del usuario
-      movie.user = userId;
+      movie.user = [userIdObjectId];//Se añade el id del usuario al array de user que todavia no existe en este objeto
       favorite = await favoritesSchema.create(movie);
       user.favorites.push(favorite._id);
     } else {
@@ -30,7 +33,7 @@ class FavoritesService {
       // Si no está en la lista de favoritos del usuario, lo añadimos
       user.favorites.push(existingFavorite._id);
       favorite = existingFavorite;
-      existingFavorite.user.push(userId);//Actualiza el array de referencias de favorites con el id del usuario
+      existingFavorite.user.push(userIdObjectId);//Actualiza el array de referencias de favorites con el id del usuario
       await existingFavorite.save();
     }
 
@@ -42,14 +45,23 @@ class FavoritesService {
     if (!user) {
       throw new Error("User not found");
     }
-
     
     const favorites = await favoritesSchema.find({ user: userId });
     if (!favorites || favorites.length === 0) {
       throw new Error("Not favorites saved");
     }
-    console.log('Usuario:', userId)
-    console.log(favorites);
+
+    // Para cada favorito, encontrar su descripción asociada y agregarla al objeto favorito
+    for (const favorite of favorites) {
+      const description = await descriptionSchema.findOne({ userId, favoriteId: favorite._id });
+      if (description) {
+        favorite.description = description.description;
+      } else {
+        favorite.description = ''; // Opcional: si no hay descripción, establecerla como cadena vacía
+      }
+    }
+    console.log('favorites', favorites);
+
     return favorites;
   }
   // async getFavoriteById(id: string): Promise<any> {
@@ -88,15 +100,33 @@ class FavoritesService {
       await favoritesSchema.findByIdAndDelete(movieId);
     }
   }
-  async updateFavorite(id: string, description: string): Promise<any> {
-    const result = await favoritesSchema.updateOne(
-      { _id: id },
-      { description: description }
-    );
-    if (result.modifiedCount === 0) {
-      throw new Error("Element not found or not modified");
-    }
+  async updateFavorite(movieId: string, userId:string, description: string): Promise<any> {
+     // Buscar o crear la descripción para el usuario y la película específicos
+     let existingDescription = await descriptionSchema.findOne({ userId, favoriteId: movieId });
+     if (!existingDescription) {
+         existingDescription = await descriptionSchema.create({
+             userId: new Types.ObjectId(userId),
+             favoriteId: new Types.ObjectId(movieId),
+             description: description,
+         });
+     } else {
+         // Si la descripción ya existe, actualizar su valor
+         existingDescription.description = description;
+         await existingDescription.save();
+     }
+
+     // Agregar la referencia de la descripción al array 'descriptions' en el documento de la película favorita
+     await favoritesSchema.findByIdAndUpdate(movieId, { $addToSet: { descriptions: existingDescription._id } });
+
+   
   }
-}
+
+  async getDescriptions(userId: string, favoriteId: string): Promise<any> {
+    const descriptions = await descriptionSchema.find({ userId, favoriteId });
+    return descriptions; // Devolver las descripciones encontradas o una lista vacía si no hay ninguna.
+  } 
+  
+  }
+
 
 export default new FavoritesService();

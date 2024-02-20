@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 
 import { Favorites } from "../../interfaces/favorites.interface";
 import favoritesService from "./favorites.service";
+import { Description } from "../../interfaces/description.interface";
 
 class FavoritesController {
     
@@ -29,6 +30,7 @@ class FavoritesController {
          const status = error.status || 500; // Si no se proporciona un código de estado, se establece el código de estado 500 por defecto
          const message = error.message || 'Internal Server Error'; // Si no se proporciona un mensaje de error, se establece un mensaje predeterminado
          res.status(status).json({ error: message });
+
       }
     
     }
@@ -46,7 +48,12 @@ class FavoritesController {
     try {
       
       const favorites: Favorites[] = await favoritesService.getFavorites(req.params.id);
-      res.status(200).json(favorites);
+      const favoritesWithDescriptions: any[] = await Promise.all(favorites.map(async (favorite) => {
+        const descriptions: Description[] = await favoritesService.getDescriptions(req.params.id, favorite._id); // Obtener las descripciones asociadas con el favorito
+        return { ...favorite.toObject(), descriptions }; // Agregar las descripciones al objeto de favorito y convertirlo a un objeto JavaScript plano
+    }));
+    res.status(200).json(favoritesWithDescriptions); // Enviar la lista de favoritos actualizada al frontend
+      //res.status(200).json(favorites);
     } catch (error:any) {
       //next(error);
       res.status(404).json(error.message);
@@ -84,8 +91,10 @@ class FavoritesController {
     try {
       await favoritesService.deleteFavorite(req.params.id, req.params.userId);
       res.status(200).json({ message: 'Element deleted successfully', data: {} });
-    } catch (error) {
+    } catch (error: any) {
       //next(error);
+      res.status(404).json(error.message);
+      console.log(error);
       return;
     }
   }
@@ -107,11 +116,14 @@ class FavoritesController {
       // const documentId = req.params.id;
       // const updatedData = { description: req.body.description };
       // await favoritesSchema.updateOne( { _id: documentId },updatedData );
-      await favoritesService.updateFavorite(req.params.id, req.body.description);
+      console.log('req.body',req.body);
+      await favoritesService.updateFavorite(req.params.id,req.params.userId, req.body.description);
 
       res.status(200).json({ message: 'Element updated successfully'});
-    } catch (error) {
-      next(error);
+    } catch (error:any) {
+      // next(error);
+      res.status(404).json(error.message);
+      console.log(error);
       return;
     }
   }
