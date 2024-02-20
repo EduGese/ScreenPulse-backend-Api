@@ -1,10 +1,9 @@
-import { Document } from "mongoose";
-import { Favorites } from "./favorites.interface";
+import { Document, Types } from "mongoose";
 
 export interface User extends Document{
     name: string,
     email: string,
     password: string,
     role: string
-    favorites: Favorites[]
+    favorites: Types.ObjectId[], 
 }

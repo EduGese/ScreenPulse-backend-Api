@@ -27,6 +27,11 @@ const favoritesSchema: Schema = new mongoose.Schema({
         type: String,
         required: false
     },
+
+    descriptions: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Description'
+    }],
     user:[
         {
         type: mongoose.Schema.Types.ObjectId,
@@ -38,3 +43,4 @@ const favoritesSchema: Schema = new mongoose.Schema({
 
 
 export default mongoose.model<Favorites>('Favorites', favoritesSchema);
+
