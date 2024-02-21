@@ -5,7 +5,7 @@ import favoritesController from './favorites.controller';
 const _router= express.Router();
 
 //Create 
-_router.post('/favorites', favoritesController.createFavorite);
+_router.post('/favorites/:id', favoritesController.createFavorite);
 
 //Get all
 _router.get('/favorites/:id', favoritesController.getFavorites);

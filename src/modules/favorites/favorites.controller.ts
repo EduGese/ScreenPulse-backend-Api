@@ -12,7 +12,7 @@ class FavoritesController {
      * @param {express.Request} req is the request of the operation
      * @param {express.Response} res is the response of the operation
      * @param {express.Next} next is the middleware to continue with code execution
-     * @returns {Array} with created document
+     * @returns {Object}  created document
      */
   async createFavorite(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -20,19 +20,24 @@ class FavoritesController {
         !req.body ||
          typeof req.body !== 'object' || Object.keys(req.body).length === 0) {//Check that body is undefined or null, is an object type and not empty
         const error = new Error('A non-empty JSON body is mandatory.');
-        return next(error);
+        res.status(400).json(error);
+        return;
       }
-      const createdFavorite = await favoritesService.createFavorite(req.body.user, req.body.movie)
+      const createdFavorite = await favoritesService.createFavorite(req.params.id, req.body)
       res.status(201).json({ message: 'Element saved succesfully', data: createdFavorite });
     } catch (error:any) {
-        //  next(error);
-         // Manejo de errores
-         const status = error.status || 500; // Si no se proporciona un código de estado, se establece el código de estado 500 por defecto
-         const message = error.message || 'Internal Server Error'; // Si no se proporciona un mensaje de error, se establece un mensaje predeterminado
-         res.status(status).json({ error: message });
-
+      if (error.message === 'Invalid input type') {
+        res.status(400).json({error:'Bad request', message: error.message});
+        return;
       }
-    
+      if (error.message === 'Favorite already exists for this user') {
+        res.status(409).json({ error: "Data conflict", message: error.message });
+        return;
+      }
+      res.status(500).json({error: 'Unknown error', message: error.message});
+      return;
+         //  next(error);
+      }
     }
   
 
@@ -53,11 +58,18 @@ class FavoritesController {
         return { ...favorite.toObject(), descriptions }; // Agregar las descripciones al objeto de favorito y convertirlo a un objeto JavaScript plano
     }));
     res.status(200).json(favoritesWithDescriptions); // Enviar la lista de favoritos actualizada al frontend
-      //res.status(200).json(favorites);
     } catch (error:any) {
-      //next(error);
-      res.status(404).json(error.message);
+      if (error.message === 'Invalid input type') {
+        res.status(400).json({ error:'Bad request', message: error.message });
+        return;
+      }
+      if (error.message === 'Not favorites saved') {
+        res.status(404).json({ error: "No element found", message: error.message });
+        return;
+      }
+      res.status(500).json({error: 'Unknown error', message: error.message});
       return;
+       //next(error);
     }
   }
 
@@ -75,10 +87,17 @@ class FavoritesController {
       await favoritesService.deleteFavorite(req.params.id, req.params.userId);
       res.status(200).json({ message: 'Element deleted successfully', data: {} });
     } catch (error: any) {
-      //next(error);
-      res.status(404).json(error.message);
-      console.log(error);
+      if (error.message === 'Invalid input type') {
+        res.status(400).json({ error:'Bad request', message: error.message });
+        return;
+      }
+      if (error.message === 'Server error.Favorite not found') {
+        res.status(404).json({ error:'Not found', message: error.message });
+        return;
+      }
+      res.status(500).json({error: 'Unknown error', message: error.message});
       return;
+      //next(error);
     }
   }
 
@@ -94,22 +113,35 @@ class FavoritesController {
     try {
       if (!req.body || typeof req.body !== 'object' || Object.keys(req.body).length === 0){
         const error = new Error('A non-empty JSON body is mandatory.');
-        return next(error);
+        res.status(400).json(error);
+        return;
       }
-      // const documentId = req.params.id;
-      // const updatedData = { description: req.body.description };
-      // await favoritesSchema.updateOne( { _id: documentId },updatedData );
       console.log('req.body',req.body);
       await favoritesService.updateFavorite(req.params.id,req.params.userId, req.body.description);
 
-      res.status(200).json({ message: 'Element updated successfully'});
+      res.status(200).json({ message: 'Element updated successfully' , data: {} });
     } catch (error:any) {
-      // next(error);
-      res.status(404).json(error.message);
-      console.log(error);
+      
+      switch (error.message) {
+        case 'Invalid input type':
+          res.status(400).json({error:'Bad request', message: error.message});
+          break;
+        case 'Description is too long':
+          res.status(400).json({error:'Bad request', message: error.message});
+          break;
+        case 'Failed to update favorite':
+          res.status(500).json({error: 'Server error', message: error.message});
+      
+        default:
+          res.status(500).json({error: 'Unknown error', message: error.message});
+          break;
+      }
       return;
+      // next(error);
+      }
+      
     }
   }
-}
+
 
 export default new FavoritesController();

@@ -3,9 +3,12 @@ import { Favorites } from "../../interfaces/favorites.interface";
 import favoritesSchema from "../../models/favorites";
 import userSchema from "../../models/user";
 import descriptionSchema from "../../models/description";
+//import { is } from 'typescript-is';
 
 class FavoritesService {
   async createFavorite(userId: string, movie: Favorites): Promise<any> {
+    if( typeof userId !== 'string') throw new Error("Invalid input type");
+    //if(!is<Favorites>(movie)) throw new Error("Invalid input type");INVESTIGAR-->https://github.com/samchon/typia?tab=readme-ov-file
     const user = await userSchema.findById(userId); //Comprobacion si existe el usuario
     if (!user) {
       throw new Error("User not found");
@@ -18,8 +21,6 @@ class FavoritesService {
       imdbID: movie.imdbID,
     });
     const userIdObjectId = new Types.ObjectId(userId);//Conversion a type ObjectId
-    console.log('userIdObjectId',userIdObjectId);
-    console.log('movie',movie)
     if (!existingFavorite) {
       // Si el favorito no existe, lo creamos y lo añadimos a la lista de favoritos del usuario
       movie.user = [userIdObjectId];//Se añade el id del usuario al array de user que todavia no existe en este objeto
@@ -43,6 +44,7 @@ class FavoritesService {
 
 
   async getFavorites(userId: string): Promise<any> {
+    if( typeof userId !== 'string') throw new Error("Invalid input type");
     const user = await userSchema.findById(userId);
     if (!user) {
       throw new Error("User not found");
@@ -62,14 +64,13 @@ class FavoritesService {
         favorite.description = ''; // Opcional: si no hay descripción, establecerla como cadena vacía
       }
     }
-    console.log('favorites', favorites);
-
     return favorites;
   }
 
 
   async deleteFavorite(movieId: string, userId: string): Promise<any> {
-  
+    if(typeof movieId !== 'string' || typeof userId !== 'string') throw new Error("Invalid input type");
+
     const user = await userSchema.findById(userId);
     if(!user){
       throw new Error("User not found");
@@ -82,7 +83,7 @@ class FavoritesService {
 
      const favorite = await favoritesSchema.findById(movieId);
     if(!favorite){
-      throw new Error("Favorite not found");
+      throw new Error("Server error.Favorite not found");
     }
     
     /*Eliminar el id del usuario del array de id's de la movie y actualizar */
@@ -92,7 +93,6 @@ class FavoritesService {
 
     /* Eliminar el favorito de la coleccion favorites, si no es favorito de ningun usuario mas*/
      const favoriteUsers = favorite.user.length;
-    console.log('Numero de usuarios de este favorito',favoriteUsers);
     if(favoriteUsers === 0){
       await favoritesSchema.findByIdAndDelete(movieId);
     }
@@ -100,6 +100,10 @@ class FavoritesService {
 
 
   async updateFavorite(movieId: string, userId:string, description: string): Promise<any> {
+     console.log('description',description);
+     if(typeof movieId !== 'string' || typeof userId !== 'string' || typeof description !== 'string') throw new Error("Invalid input type");
+     if(description.length > 200) throw new Error("Description is too long");
+
      // Buscar o crear la descripción para el usuario y la película específicos
      let existingDescription = await descriptionSchema.findOne({ userId, favoriteId: movieId });
      if (!existingDescription) {
@@ -115,7 +119,11 @@ class FavoritesService {
      }
 
      // Agregar la referencia de la descripción al array 'descriptions' en el documento de la película favorita
-     await favoritesSchema.findByIdAndUpdate(movieId, { $addToSet: { descriptions: existingDescription._id } });
+     const updatedResult = await favoritesSchema.findByIdAndUpdate(movieId, { $addToSet: { descriptions: existingDescription._id } });
+     if(!updatedResult){
+       throw new Error("Failed to update favorite");
+     }
+     return updatedResult; 
   }
 
   

@@ -11,7 +11,10 @@ class UserController {
       const response = await UserService.loginUser(email, password);
       res.json(response);
     } catch (error:any) {
-      res.status(400).json({ error: error.message });
+      res.status(401).json({ 
+        error: "Authentication failed", 
+        message: error.message 
+      });
       //next(error);
     }
   }
@@ -21,7 +24,10 @@ class UserController {
       const response = await UserService.registerUser(req.body);
       res.json(response);
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      res.status(409).json({ 
+        error: "Data conflict", 
+        message: error.message 
+      });
       // next(error);
     }
   }
