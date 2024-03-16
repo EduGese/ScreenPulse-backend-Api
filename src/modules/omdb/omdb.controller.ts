@@ -29,6 +29,17 @@ class OmdbController {
       return;
     }
   }  
+  async getMovieInfo(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        
+          const omdbResponse: OmdbResponse = await omdbService.getMovieInfo(req.params.id);
+          res.status(200).json(omdbResponse);
+
+    } catch (error) {
+      next(error);
+      return;
+    }
+  }  
 }
 
 export default new OmdbController();
