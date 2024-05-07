@@ -63,8 +63,8 @@ Registers a new user.
 
 
 ### OMDB EndPoints
-#### Get All Movies from OMDB API
-Retrieves all movies from the OMDB API.
+#### Get All Movies
+Retrieves all movies/series/videogames matching searching criteria from the OMDB API.
 
 ```http
       POST /api/omdb
@@ -75,7 +75,7 @@ Retrieves all movies from the OMDB API.
 | :-------- | :------- | :------------------------- |
 | `s` | `string` | **Required**. Search term |
 | `type` | `string` | Type of media (movie, series, episode) |
-| `y` | `string` | Type of media (movie, series, episode) |
+| `y` | `string` | Year |
 
 
 #### Get Movie info
