@@ -6,7 +6,7 @@ This backend application, built with Node.js and Express, serves as the REST API
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Features](#features)
+- [Features ✨](#features)
 - [Technologies & Libraries Used](#technologies--libraries-used)
 - [API Documentation](#api-documentation)
   - [User EndPoints](#user-endpoints)
