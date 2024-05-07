@@ -1,6 +1,6 @@
 # ScreenPulse REST API 🚀
 
-This backend application, built with Node.js and Express, serves as the REST API for the ScreenPulse-frontApp https://github.com/EduGese/ScreenPulse-frontApp. It utilizes TypeScript to ensure strong and robust typing, ensuring code reliability and maintainability.
+This backend application, built with Node.js and Express, serves as the REST API for the [ScreenPulse-frontApp](https://github.com/EduGese/ScreenPulse-frontApp). It utilizes TypeScript to ensure strong and robust typing, ensuring code reliability and maintainability.
 
 ## Introduction
 ScreenPulse REST API acts as the backend server for the ScreenPulse-frontApp application, providing endpoints for user authentication, data management, and integration with external APIs such as OMDB.
