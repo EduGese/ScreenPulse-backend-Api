@@ -2,28 +2,6 @@
 
 This backend application, built with Node.js and Express, serves as the REST API for the ScreenPulse-frontApp https://github.com/EduGese/ScreenPulse-frontApp. It utilizes TypeScript to ensure strong and robust typing, ensuring code reliability and maintainability.
 
-## Table of Contents
-- [Introduction](#introduction)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Features ✨](#features)
-- [Technologies & Libraries Used](#technologies--libraries-used)
-- [API Documentation](#api-documentation)
-  - [User EndPoints](#user-endpoints)
-    - [Login](#login)
-    - [Register](#register)
-  - [OMDB EndPoints](#omdb-endpoints)
-    - [Get All Movies from OMDB API](#get-all-movies-from-omdb-api)
-    - [Get Movie Info](#get-movie-info)
-  - [Favorites EndPoints](#favorites-endpoints)
-    - [Create Favorite](#create-favorite)
-    - [Get All Favorites](#get-all-favorites)
-    - [Delete Favorite](#delete-favorite)
-    - [Update Favorite](#update-favorite)
-- [Configuration](#configuration)
-- [Modular Structure](#modular-structure)
-- [Contributing](#contributing)
-- [License](#license)
 ## Introduction
 ScreenPulse REST API acts as the backend server for the ScreenPulse-frontApp application, providing endpoints for user authentication, data management, and integration with external APIs such as OMDB.
 
