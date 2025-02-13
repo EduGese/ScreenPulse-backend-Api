@@ -32,7 +32,7 @@ Once the server is running, you can make requests to the provided endpoints to p
 - **Axios:** Promise-based HTTP client for making requests to servers.
 - **Render:** Hosting service.
 
-## API documentaion
+## API documentation
 
 ### User EndPoints
 
