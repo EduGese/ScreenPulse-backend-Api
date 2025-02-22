@@ -18,6 +18,8 @@ let CLIENT_URL = ''
 if(process.env.NODE_ENV ==='production'){
  CLIENT_URL = process.env.CLIENT_URL_PROD || '';
 
+}else if(process.env.NODE_ENV ==='test'){
+ CLIENT_URL = process.env.CLIENT_URL_TEST || '';
 }else{
  CLIENT_URL = process.env.CLIENT_URL_DEV || '';
 }
