@@ -1,52 +1,58 @@
 import axios, { AxiosResponse } from "axios";
-import { OmdbResponse } from "../../interfaces/omdb.interface";
-
+import { OmdbResponse,  } from "../../interfaces/omdb.interface";
+import { MediaItem } from "../../interfaces/favorites.interface";
+interface OmdbMovieRaw {
+  Title: string;
+  Year: string;
+  imdbID: string;
+  Type: string;
+  Poster: string;
+}
 
 class OmdbService {
-  async getOmdbMovies(query: any): Promise<any> {
+  async getOmdbMovies(title: string, type: string, year: string, page: String): Promise<any> {
+    type = type === "all" ? '' : type;
     try {
-      let totalResults: any[] = [];
-      let maxPAges = 10;
-      let response: AxiosResponse<OmdbResponse> = await axios.get(
+      const response: AxiosResponse<OmdbResponse> = await axios.get(
         process.env.OMDB_URL || "",
         {
           params: {
             apikey: process.env.OMDB_APIKEY,
-            s: query.s,
-            type: query.type,
-            y: query.y,
+            s: title.toLocaleLowerCase(),
+            type: type.toLocaleLowerCase(),
+            y: year,
+            page: page,
           },
         }
       );
-      let totalResultsLength: number = Number(response.data.totalResults);
-      let totalPagesNeeded: number = Math.ceil(totalResultsLength / 5);
-
-      for (let index = 0; index < totalPagesNeeded; index++) {
-        if (index  >= maxPAges) {
-          break;
-        }
-        let responseByPage: AxiosResponse<OmdbResponse> = await axios.get(
-          process.env.OMDB_URL || "",
-          {
-            params: {
-              apikey: process.env.OMDB_APIKEY,
-              s: query.s,
-              type: query.type,
-              y: query.y,
-              page: index + 1,
-            },
+      if (response.data.Search) {
+        response.data.Search = response.data.Search.map((item: any) => {
+          const newItem: any = {}
+      
+          for (const key in item) {
+            if (['Title', 'Year', 'Type', 'Poster'].includes(key)) {
+              newItem[key.toLowerCase()] = item[key]
+            } else {
+              newItem[key] = item[key] 
+            }
           }
-        );
-        responseByPage.data.Search?.forEach((element) => {
-          totalResults.push(element);
-        });
-        if (index  >= maxPAges) {
-          break;
+      
+          return newItem
+        })
+      }
+      return response.data;
+
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw { status: 401, message: "Invalid OMDB API key", code: "INVALID_API_KEY" };
+        }
+        if (error.code === "ECONNABORTED") {
+          throw { status: 504, message: "OMDB request timed out", code: "TIMEOUT" };
         }
       }
-      return totalResults;
-    } catch (error) {
-      throw new Error("Error while searching");
+      throw { status: 500, message: "Internal server error", code: "INTERNAL_ERROR" };
+      
     }
   }
   async getMovieInfo(id: string): Promise<any> {
@@ -62,7 +68,16 @@ class OmdbService {
       );
       return response.data;
     } catch (error) {
-      throw new Error("Error while searching");
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw { status: 401, message: "Invalid OMDB API key", code: "INVALID_API_KEY" };
+        }
+        if (error.code === "ECONNABORTED") {
+          throw { status: 504, message: "OMDB request timed out", code: "TIMEOUT" };
+        }
+      }
+      throw { status: 500, message: "Internal server error", code: "INTERNAL_ERROR" };
+      
     }
   }
 }

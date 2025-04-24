@@ -1,8 +1,9 @@
-import { Favorites } from "./favorites.interface";
+import { MediaItem } from "./favorites.interface";
 
 export interface OmdbResponse {
     Response: 'True' | 'False';
-    Search?: Favorites[];
+    Search?: MediaItem[];
     totalResults?: string;
     Error?: string;
+    isFavorite?: boolean;
   }

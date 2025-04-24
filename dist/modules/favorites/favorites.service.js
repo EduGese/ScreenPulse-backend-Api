@@ -22,7 +22,7 @@ class FavoritesService {
         return __awaiter(this, void 0, void 0, function* () {
             if (typeof userId !== 'string')
                 throw new Error("Invalid input type");
-            //if(!is<Favorites>(movie)) throw new Error("Invalid input type");INVESTIGAR-->https://github.com/samchon/typia?tab=readme-ov-file
+            //if(!is<MediaItem>(movie)) throw new Error("Invalid input type");INVESTIGAR-->https://github.com/samchon/typia?tab=readme-ov-file
             const user = yield user_1.default.findById(userId); //Comprobacion si existe el usuario
             if (!user) {
                 throw new Error("User not found");

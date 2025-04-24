@@ -75,7 +75,7 @@ Retrieves all movies/series/videogames matching searching criteria from the OMDB
 | :-------- | :------- | :------------------------- |
 | `s` | `string` | **Required**. Search term |
 | `type` | `string` | Type of media (movie, series, episode) |
-| `y` | `string` | Year |
+| `y` | `string` | year |
 
 
 #### Get Movie info

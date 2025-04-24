@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const favoritesSchema = new mongoose_1.default.Schema({
-    Title: {
+    title: {
         type: String,
         required: true
     },
-    Year: {
+    year: {
         type: String,
         required: true
     },
@@ -18,11 +18,11 @@ const favoritesSchema = new mongoose_1.default.Schema({
         unique: true,
         required: true
     },
-    Type: {
+    type: {
         type: String,
         required: true
     },
-    Poster: {
+    poster: {
         type: String,
         required: true
     },
@@ -42,4 +42,4 @@ const favoritesSchema = new mongoose_1.default.Schema({
         }
     ]
 });
-exports.default = mongoose_1.default.model('Favorites', favoritesSchema);
+exports.default = mongoose_1.default.model('MediaItem', favoritesSchema);

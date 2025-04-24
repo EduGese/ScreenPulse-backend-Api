@@ -11,7 +11,7 @@ const port = config.server.port;
 
 //CORS
 var corsOptions = {
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 204,
   maxAge: 500,
