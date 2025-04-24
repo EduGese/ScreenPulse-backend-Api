@@ -8,11 +8,11 @@ const express_1 = __importDefault(require("express"));
 const favorites_controller_1 = __importDefault(require("./favorites.controller"));
 const _router = express_1.default.Router();
 //Create 
-_router.post('/favorites/:id', favorites_controller_1.default.createFavorite);
+_router.post('/:userId', favorites_controller_1.default.createFavorite);
 //Get all
-_router.get('/favorites/:id', favorites_controller_1.default.getFavorites);
+_router.get('/:userId', favorites_controller_1.default.getFavorites);
 //Delete by Id
-_router.delete('/favorites/:id/:userId', favorites_controller_1.default.deleteFavorite);
+_router.delete('/:id/:userId', favorites_controller_1.default.deleteFavorite);
 //Update by Id
-_router.put('/favorites/:id/:userId', favorites_controller_1.default.updateFavorite);
+_router.patch('/:id/:userId', favorites_controller_1.default.updateFavorite);
 exports.router = _router;

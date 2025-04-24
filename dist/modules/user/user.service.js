@@ -19,10 +19,17 @@ class UserService {
     loginUser(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield user_1.default.findOne({ email: email });
-            if (!user || !bcryptjs_1.default.compareSync(password, user.password)) { //Checks: 1º if finds user 2º if password is correct
-                throw new Error("Error in mail or password"); //Throw error if fails;
+            if (!user || !bcryptjs_1.default.compareSync(password, user.password)) {
+                throw new Error("Invalid credentials");
             }
-            return { success: "Login OK", token: UserService.createToken(user), user: user }; //Return object with token if succeed
+            return {
+                token: UserService.createToken(user),
+                user: {
+                    _id: user._id,
+                    email: user.email,
+                    name: user.name
+                }
+            };
         });
     }
     registerUser(userData) {
@@ -41,7 +48,7 @@ class UserService {
             user_id: user._id,
             user_role: user.role,
         };
-        return jsonwebtoken_1.default.sign(payload, process.env.TOKEN_SECRET || "token"); //Return token if succeded
+        return jsonwebtoken_1.default.sign(payload, process.env.TOKEN_SECRET || "token");
     }
 }
 exports.default = new UserService();

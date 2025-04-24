@@ -14,50 +14,51 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 class OmdbService {
-    getOmdbMovies(query) {
+    getOmdbMovies(title, type, year, page) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            type = type === "all" ? '' : type;
             try {
-                let totalResults = [];
-                let maxPAges = 10;
-                let response = yield axios_1.default.get(process.env.OMDB_URL || "", {
+                const response = yield axios_1.default.get(process.env.OMDB_URL || "", {
                     params: {
                         apikey: process.env.OMDB_APIKEY,
-                        s: query.s,
-                        type: query.type,
-                        y: query.y,
+                        s: title.toLocaleLowerCase(),
+                        type: type.toLocaleLowerCase(),
+                        y: year,
+                        page: page,
                     },
                 });
-                let totalResultsLength = Number(response.data.totalResults);
-                let totalPagesNeeded = Math.ceil(totalResultsLength / 5);
-                for (let index = 0; index < totalPagesNeeded; index++) {
-                    if (index >= maxPAges) {
-                        break;
-                    }
-                    let responseByPage = yield axios_1.default.get(process.env.OMDB_URL || "", {
-                        params: {
-                            apikey: process.env.OMDB_APIKEY,
-                            s: query.s,
-                            type: query.type,
-                            y: query.y,
-                            page: index + 1,
-                        },
+                if (response.data.Search) {
+                    response.data.Search = response.data.Search.map((item) => {
+                        const newItem = {};
+                        for (const key in item) {
+                            if (['Title', 'Year', 'Type', 'Poster'].includes(key)) {
+                                newItem[key.toLowerCase()] = item[key];
+                            }
+                            else {
+                                newItem[key] = item[key];
+                            }
+                        }
+                        return newItem;
                     });
-                    (_a = responseByPage.data.Search) === null || _a === void 0 ? void 0 : _a.forEach((element) => {
-                        totalResults.push(element);
-                    });
-                    if (index >= maxPAges) {
-                        break;
-                    }
                 }
-                return totalResults;
+                return response.data;
             }
             catch (error) {
-                throw new Error("Error while searching");
+                if (axios_1.default.isAxiosError(error)) {
+                    if (((_a = error.response) === null || _a === void 0 ? void 0 : _a.status) === 401) {
+                        throw { status: 401, message: "Invalid OMDB API key", code: "INVALID_API_KEY" };
+                    }
+                    if (error.code === "ECONNABORTED") {
+                        throw { status: 504, message: "OMDB request timed out", code: "TIMEOUT" };
+                    }
+                }
+                throw { status: 500, message: "Internal server error", code: "INTERNAL_ERROR" };
             }
         });
     }
     getMovieInfo(id) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const response = yield axios_1.default.get(process.env.OMDB_URL || "", {
@@ -69,7 +70,15 @@ class OmdbService {
                 return response.data;
             }
             catch (error) {
-                throw new Error("Error while searching");
+                if (axios_1.default.isAxiosError(error)) {
+                    if (((_a = error.response) === null || _a === void 0 ? void 0 : _a.status) === 401) {
+                        throw { status: 401, message: "Invalid OMDB API key", code: "INVALID_API_KEY" };
+                    }
+                    if (error.code === "ECONNABORTED") {
+                        throw { status: 504, message: "OMDB request timed out", code: "TIMEOUT" };
+                    }
+                }
+                throw { status: 500, message: "Internal server error", code: "INTERNAL_ERROR" };
             }
         });
     }

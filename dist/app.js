@@ -13,7 +13,7 @@ const app = (0, express_1.default)();
 const port = config_1.default.server.port;
 //CORS
 var corsOptions = {
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     optionsSuccessStatus: 204,
     maxAge: 500,
@@ -22,7 +22,13 @@ var corsOptions = {
 app.use((0, cors_1.default)(corsOptions));
 //routes
 app.use(express_1.default.json());
-app.use('/api', modules_1.favoritesModule.router, modules_1.omdbModule.router, modules_1.userModule.router);
+// app.use('/api',
+//  favoritesModule.router, omdbModule.router, userModule.router
+//  );
+// app.ts
+app.use('/api/favorites', modules_1.favoritesModule.router);
+app.use('/api/omdb', modules_1.omdbModule.router);
+app.use('/api/user', modules_1.userModule.router);
 // server listenening on config.server.port
 app.listen(port, () => {
     console.log('Server is running on port', port);

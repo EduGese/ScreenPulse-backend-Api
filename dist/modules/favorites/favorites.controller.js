@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const favorites_service_1 = __importDefault(require("./favorites.service"));
+const mongoose_1 = __importDefault(require("mongoose"));
 class FavoritesController {
     /**
        * @summary Create new document
@@ -26,26 +27,36 @@ class FavoritesController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (!req.body ||
-                    typeof req.body !== 'object' || Object.keys(req.body).length === 0) { //Check that body is undefined or null, is an object type and not empty
+                    typeof req.body !== 'object' || Object.keys(req.body).length === 0) {
                     const error = new Error('A non-empty JSON body is mandatory.');
-                    res.status(400).json(error);
+                    res.status(400).json({
+                        message: error.message,
+                        code: 'BAD_REQUEST',
+                    });
                     return;
                 }
-                const createdFavorite = yield favorites_service_1.default.createFavorite(req.params.id, req.body);
-                res.status(201).json({ message: 'Element saved succesfully', data: createdFavorite });
+                const createdFavorite = yield favorites_service_1.default.createFavorite(req.params.userId, req.body);
+                res.status(201).json(createdFavorite);
             }
             catch (error) {
                 if (error.message === 'Invalid input type') {
-                    res.status(400).json({ error: 'Bad request', message: error.message });
+                    res.status(400).json({
+                        message: 'Bad request: Invalid input type',
+                        code: 'INVALID_INPUT_TYPE',
+                    });
                     return;
                 }
                 if (error.message === 'Favorite already exists for this user') {
-                    res.status(409).json({ error: "Data conflict", message: error.message });
+                    res.status(409).json({
+                        message: 'Conflict: Favorite already exists for this user',
+                        code: 'FAVORITE_EXISTS',
+                    });
                     return;
                 }
-                res.status(500).json({ error: 'Unknown error', message: error.message });
-                return;
-                //  next(error);
+                res.status(500).json({
+                    message: 'An unexpected error occurred. Please try again later.',
+                    code: 'INTERNAL_ERROR',
+                });
             }
         });
     }
@@ -57,28 +68,72 @@ class FavoritesController {
      * @param {express.Next} next is the middleware to continue with code execution
      * @returns {Array} with all documents matching the conditions
      */
-    getFavorites(req, res, next) {
+    getFavorites(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const favorites = yield favorites_service_1.default.getFavorites(req.params.id);
-                const favoritesWithDescriptions = yield Promise.all(favorites.map((favorite) => __awaiter(this, void 0, void 0, function* () {
-                    const descriptions = yield favorites_service_1.default.getDescriptions(req.params.id, favorite._id); // Obtener las descripciones asociadas con el favorito
-                    return Object.assign(Object.assign({}, favorite.toObject()), { descriptions }); // Agregar las descripciones al objeto de favorito y convertirlo a un objeto JavaScript plano
-                })));
-                res.status(200).json(favoritesWithDescriptions); // Enviar la lista de favoritos actualizada al frontend
+                const page = req.query.page ? parseInt(req.query.page) : 1;
+                const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 10;
+                const sortField = req.query.sortField ? req.query.sortField : 'createdAt';
+                const sortOrder = req.query.sortOrder ? parseInt(req.query.sortOrder) : -1;
+                const mediaType = req.query.type ? req.query.type : undefined;
+                const searchTerm = req.query.searchTerm ? req.query.searchTerm : undefined;
+                const userId = req.params.userId;
+                /* VALIDACIONES */
+                if (!userId || typeof userId !== 'string' || !mongoose_1.default.Types.ObjectId.isValid(userId)) {
+                    res.status(400).json({
+                        message: "Invalid user ID format",
+                        code: "INVALID_USER_ID"
+                    });
+                    return;
+                }
+                if (isNaN(page) || page < 1 || isNaN(pageSize) || pageSize < 1 || pageSize > 100) {
+                    res.status(400).json({
+                        message: "Invalid pagination parameters. Page must be ≥ 1 and pageSize between 1-100",
+                        code: "INVALID_PAGINATION"
+                    });
+                    return;
+                }
+                const allowedSortFields = ['createdAt', 'title', 'year'];
+                if (!allowedSortFields.includes(sortField)) {
+                    res.status(400).json({
+                        message: `Invalid sortField. Allowed values: ${allowedSortFields.join(', ')}`,
+                        code: "INVALID_SORT_FIELD"
+                    });
+                    return;
+                }
+                if (sortOrder !== 1 && sortOrder !== -1) {
+                    res.status(400).json({
+                        message: "sortOrder must be 1 (asc) or -1 (desc)",
+                        code: "INVALID_SORT_ORDER"
+                    });
+                    return;
+                }
+                if (mediaType) {
+                    const allowedTypes = ['movie', 'series', 'game'];
+                    if (!allowedTypes.includes(mediaType.toLowerCase())) {
+                        res.status(400).json({
+                            message: `Invalid media type. Allowed values: ${allowedTypes.join(', ')}`,
+                            code: "INVALID_MEDIA_TYPE"
+                        });
+                        return;
+                    }
+                }
+                const favorites = yield favorites_service_1.default.getFavorites(userId, page, pageSize, sortField, sortOrder, mediaType, searchTerm);
+                res.status(200).json(favorites);
             }
             catch (error) {
                 if (error.message === 'Invalid input type') {
-                    res.status(400).json({ error: 'Bad request', message: error.message });
+                    res.status(400).json({
+                        message: 'Bad request',
+                        code: 'INVALID_INPUT_TYPE'
+                    });
                     return;
                 }
-                if (error.message === 'Not favorites saved') {
-                    res.status(404).json({ error: "No element found", message: error.message });
-                    return;
-                }
-                res.status(500).json({ error: 'Unknown error', message: error.message });
+                res.status(500).json({
+                    message: 'An unexpected error occurred. Please try again later.',
+                    code: 'INTERNAL_ERROR'
+                });
                 return;
-                //next(error);
             }
         });
     }
@@ -90,7 +145,7 @@ class FavoritesController {
        * @param {express.Next} next is the middleware to continue with code execution
        * @returns {Object} Empty object if the operation went well
        */
-    deleteFavorite(req, res, next) {
+    deleteFavorite(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield favorites_service_1.default.deleteFavorite(req.params.id, req.params.userId);
@@ -98,16 +153,24 @@ class FavoritesController {
             }
             catch (error) {
                 if (error.message === 'Invalid input type') {
-                    res.status(400).json({ error: 'Bad request', message: error.message });
+                    res.status(400).json({
+                        message: 'Bad request',
+                        code: 'INVALID_INPUT_TYPE',
+                    });
                     return;
                 }
                 if (error.message === 'Server error.Favorite not found') {
-                    res.status(404).json({ error: 'Not found', message: error.message });
+                    res.status(404).json({
+                        message: 'Favorite not found',
+                        code: 'FAVORITE_NOT_FOUND',
+                    });
                     return;
                 }
-                res.status(500).json({ error: 'Unknown error', message: error.message });
+                res.status(500).json({
+                    message: 'An unexpected error occurred. Please try again later.',
+                    code: 'INTERNAL_ERROR',
+                });
                 return;
-                //next(error);
             }
         });
     }
@@ -117,36 +180,48 @@ class FavoritesController {
        * @param {express.Request} req is the request of the operation
        * @param {express.Response} res is the response of the operation
        * @param {express.Next} next is the middleware to continue with code execution
-       * @returns {Object} Empty object if the operation went well
+       * @returns {Object} Updated object if the operation went well
        */
-    updateFavorite(req, res, next) {
+    updateFavorite(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (!req.body || typeof req.body !== 'object' || Object.keys(req.body).length === 0) {
-                    const error = new Error('A non-empty JSON body is mandatory.');
-                    res.status(400).json(error);
+                    res.status(400).json({
+                        message: 'A non-empty JSON body is mandatory.',
+                        code: 'EMPTY_BODY'
+                    });
                     return;
                 }
-                console.log('req.body', req.body);
-                yield favorites_service_1.default.updateFavorite(req.params.id, req.params.userId, req.body.description);
-                res.status(200).json({ message: 'Element updated successfully', data: {} });
+                const updatedItem = yield favorites_service_1.default.updateFavorite(req.params.id, req.params.userId, req.body.description);
+                res.status(200).json(updatedItem);
             }
             catch (error) {
                 switch (error.message) {
                     case 'Invalid input type':
-                        res.status(400).json({ error: 'Bad request', message: error.message });
+                        res.status(400).json({
+                            message: 'Invalid input type',
+                            code: 'INVALID_INPUT_TYPE'
+                        });
                         break;
                     case 'Description is too long':
-                        res.status(400).json({ error: 'Bad request', message: error.message });
+                        res.status(400).json({
+                            message: 'Description is too long',
+                            code: 'DESCRIPTION_TOO_LONG'
+                        });
                         break;
                     case 'Failed to update favorite':
-                        res.status(500).json({ error: 'Server error', message: error.message });
+                        res.status(404).json({
+                            message: 'Favorite not found or could not be updated',
+                            code: 'FAVORITE_NOT_FOUND'
+                        });
+                        break;
                     default:
-                        res.status(500).json({ error: 'Unknown error', message: error.message });
+                        res.status(500).json({
+                            message: 'An unexpected error occurred. Please try again later.',
+                            code: 'INTERNAL_ERROR'
+                        });
                         break;
                 }
-                return;
-                // next(error);
             }
         });
     }

@@ -22,31 +22,47 @@ class OmdbController {
      * @param {express.Next} next is the middleware to continue with code execution
      * @returns {Array} with all documents matching the conditions
      */
-    getOmdbMovies(req, res, next) {
+    getOmdbMovies(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                if (!req.body || typeof req.body !== 'object' || Object.keys(req.body).length === 0) { //Check that body is undefined or null, is an object type and not empty
-                    const error = new Error('A non-empty JSON body is mandatory.');
-                    return next(error);
+                const title = req.query.title || "";
+                const type = req.query.type || "";
+                const year = req.query.year || "";
+                const page = req.query.page || "1";
+                console.log('🧩 Query recibida:', { title, type, year, page });
+                if (!title.trim()) {
+                    res.status(400).json({ message: "Invalid request", code: "BAD_REQUEST" });
+                    return;
                 }
-                const omdbResponse = yield omdb_service_1.default.getOmdbMovies(req.body);
+                if (page && isNaN(Number(page))) {
+                    console.warn("Page is not a number: this is likely a frontend bug.");
+                    res.status(400).json({ message: "Invalid request", code: "BAD_REQUEST" });
+                    return;
+                }
+                console.log('📡 Haciendo petición a OMDB con:', { title, type, year, page });
+                const omdbResponse = yield omdb_service_1.default.getOmdbMovies(title, type, year, page);
+                console.log('✅ Respuesta de OMDB:', omdbResponse);
                 res.status(200).json(omdbResponse);
             }
             catch (error) {
-                next(error);
-                return;
+                const status = error.status || 500;
+                const message = error.message || "Internal server error";
+                const code = error.code || "INTERNAL_ERROR";
+                res.status(status).json({ message, code });
             }
         });
     }
-    getMovieInfo(req, res, next) {
+    getMovieInfo(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const omdbResponse = yield omdb_service_1.default.getMovieInfo(req.params.id);
                 res.status(200).json(omdbResponse);
             }
             catch (error) {
-                next(error);
-                return;
+                const status = error.status || 500;
+                const message = error.message || "Internal server error";
+                const code = error.code || "INTERNAL_ERROR";
+                res.status(status).json({ message, code });
             }
         });
     }

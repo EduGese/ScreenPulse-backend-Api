@@ -34,12 +34,12 @@ const favoritesSchema = new mongoose_1.default.Schema({
             type: mongoose_1.default.Schema.Types.ObjectId,
             ref: 'Description'
         }],
-    user: [
-        {
+    user: [{
             type: mongoose_1.default.Schema.Types.ObjectId,
             ref: 'User',
             required: true
-        }
-    ]
+        }]
+}, {
+    timestamps: true
 });
 exports.default = mongoose_1.default.model('MediaItem', favoritesSchema);

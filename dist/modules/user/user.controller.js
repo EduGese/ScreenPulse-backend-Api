@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_service_1 = __importDefault(require("./user.service"));
 class UserController {
-    loginUser(req, res, next) {
+    loginUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { email, password } = req.body;
             try {
@@ -22,26 +22,45 @@ class UserController {
                 res.json(response);
             }
             catch (error) {
-                res.status(401).json({
-                    error: "Authentication failed",
-                    message: error.message
-                });
-                //next(error);
+                if (error.message === 'Invalid credentials') {
+                    res.status(401).json({
+                        error: "Authentication failed",
+                        message: "Invalid login credentials",
+                        code: 'AUTH_ERROR',
+                        status: 401
+                    });
+                }
+                else {
+                    res.status(500).json({
+                        error: "Internal Server Error",
+                        message: "An unexpected error occurred. Please try again later.",
+                        code: 'INTERNAL_ERROR',
+                        status: 500
+                    });
+                }
             }
         });
     }
-    registertUser(req, res, next) {
+    registertUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const response = yield user_service_1.default.registerUser(req.body);
                 res.json(response);
             }
             catch (error) {
-                res.status(409).json({
-                    error: "Data conflict",
-                    message: error.message
-                });
-                // next(error);
+                if (error.message === 'User already exists') {
+                    res.status(409).json({
+                        message: "User already exists",
+                        code: 'USER_EXISTS',
+                    });
+                }
+                else {
+                    console.error("Unexpected error in login:", error);
+                    res.status(500).json({
+                        message: "An unexpected error occurred. Please try again later.",
+                        code: 'INTERNAL_ERROR',
+                    });
+                }
             }
         });
     }

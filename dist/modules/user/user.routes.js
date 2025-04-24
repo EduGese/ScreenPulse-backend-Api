@@ -8,7 +8,7 @@ const express_1 = __importDefault(require("express"));
 const user_controller_1 = __importDefault(require("./user.controller"));
 const _router = express_1.default.Router();
 //Login
-_router.post("/user/login", user_controller_1.default.loginUser);
+_router.post("/login", user_controller_1.default.loginUser);
 //Register
-_router.post("/user/register", user_controller_1.default.registertUser);
+_router.post("/register", user_controller_1.default.registertUser);
 exports.router = _router;

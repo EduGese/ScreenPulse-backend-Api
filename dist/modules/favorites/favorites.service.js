@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -16,104 +27,99 @@ const mongoose_1 = require("mongoose");
 const favorites_1 = __importDefault(require("../../models/favorites"));
 const user_1 = __importDefault(require("../../models/user"));
 const description_1 = __importDefault(require("../../models/description"));
-//import { is } from 'typescript-is';
 class FavoritesService {
     createFavorite(userId, movie) {
         return __awaiter(this, void 0, void 0, function* () {
             if (typeof userId !== 'string')
                 throw new Error("Invalid input type");
-            //if(!is<MediaItem>(movie)) throw new Error("Invalid input type");INVESTIGAR-->https://github.com/samchon/typia?tab=readme-ov-file
-            const user = yield user_1.default.findById(userId); //Comprobacion si existe el usuario
+            const user = yield user_1.default.findById(userId);
             if (!user) {
                 throw new Error("User not found");
             }
             let favorite;
-            // Verificar si el favorito ya existe en la colección
             const existingFavorite = yield favorites_1.default.findOne({
                 imdbID: movie.imdbID,
             });
-            const userIdObjectId = new mongoose_1.Types.ObjectId(userId); //Conversion a type ObjectId
+            const userIdObjectId = new mongoose_1.Types.ObjectId(userId);
             if (!existingFavorite) {
-                // Si el favorito no existe, lo creamos y lo añadimos a la lista de favoritos del usuario
-                movie.user = [userIdObjectId]; //Se añade el id del usuario al array de user que todavia no existe en este objeto
+                movie.user = [userIdObjectId];
                 favorite = yield favorites_1.default.create(movie);
                 user.favorites.push(favorite._id);
             }
             else {
-                // Si el favorito ya existe, verificamos si está en la lista de favoritos del usuario
                 if (user.favorites.includes(existingFavorite._id)) {
                     throw new Error("Favorite already exists for this user");
                 }
-                // Si no está en la lista de favoritos del usuario, lo añadimos
                 user.favorites.push(existingFavorite._id);
                 favorite = existingFavorite;
-                existingFavorite.user.push(userIdObjectId); //Actualiza el array de referencias de favorites con el id del usuario
+                existingFavorite.user.push(userIdObjectId);
                 yield existingFavorite.save();
             }
             yield user.save();
             return favorite;
         });
     }
-    getFavorites(userId) {
+    getFavorites(userId, page, pageSize, sortField, sortOrder, mediaType, searchTerm) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("getFavorites", userId, page, pageSize, sortField, sortOrder, mediaType, searchTerm);
             if (typeof userId !== 'string')
                 throw new Error("Invalid input type");
             const user = yield user_1.default.findById(userId);
             if (!user) {
                 throw new Error("User not found");
             }
-            const favorites = yield favorites_1.default.find({ user: userId });
-            if (!favorites || favorites.length === 0) {
-                throw new Error("Not favorites saved");
-            }
-            // Para cada favorito, encontrar su descripción asociada y agregarla al objeto favorito
-            for (const favorite of favorites) {
-                const description = yield description_1.default.findOne({ userId, favoriteId: favorite._id });
-                if (description) {
-                    favorite.description = description.description;
+            const sorting = { [sortField]: sortOrder };
+            const filter = Object.assign(Object.assign({ user: userId }, (mediaType && { type: mediaType })), (searchTerm && {
+                title: {
+                    $regex: `^${searchTerm}`,
+                    $options: 'i'
                 }
-                else {
-                    favorite.description = ''; // Opcional: si no hay descripción, establecerla como cadena vacía
-                }
-            }
-            return favorites;
+            }));
+            const favoritesWithoutDescriptions = yield favorites_1.default.find(filter)
+                .sort(sorting)
+                .limit(pageSize * 1)
+                .skip((page - 1) * pageSize)
+                .exec();
+            const count = yield favorites_1.default.countDocuments(filter);
+            const favorites = yield this.addUserDescriptionsToFavorites(userId, favoritesWithoutDescriptions);
+            return {
+                favorites,
+                totalFavorites: count,
+                currentPage: page,
+                pageSize: pageSize,
+            };
         });
     }
     deleteFavorite(movieId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (typeof movieId !== 'string' || typeof userId !== 'string')
+            if (typeof movieId !== 'string' || typeof userId !== 'string') {
                 throw new Error("Invalid input type");
-            const user = yield user_1.default.findById(userId);
-            if (!user) {
-                throw new Error("User not found");
             }
-            /*Eliminar movie del array de favorites del usuario y actualizar*/
-            const favoritesArray = user.favorites.filter(favorite => favorite.toString() !== movieId);
-            user.favorites = favoritesArray;
-            yield user.save();
             const favorite = yield favorites_1.default.findById(movieId);
-            if (!favorite) {
-                throw new Error("Server error.Favorite not found");
-            }
-            /*Eliminar el id del usuario del array de id's de la movie y actualizar */
-            const usersArray = favorite.user.filter((user) => user.toString() !== userId);
-            favorite.user = usersArray;
+            if (!favorite)
+                throw new Error("Favorite not found");
+            const user = yield user_1.default.findById(userId);
+            if (!user)
+                throw new Error("User not found");
+            user.favorites = user.favorites.filter(fav => fav.toString() !== movieId);
+            yield user.save();
+            favorite.user = favorite.user.filter(u => u.toString() !== userId);
             yield favorite.save();
-            /* Eliminar el favorito de la coleccion favorites, si no es favorito de ningun usuario mas*/
-            const favoriteUsers = favorite.user.length;
-            if (favoriteUsers === 0) {
+            yield description_1.default.deleteOne({
+                userId: userId,
+                favoriteId: movieId
+            });
+            if (favorite.user.length === 0) {
                 yield favorites_1.default.findByIdAndDelete(movieId);
             }
         });
     }
     updateFavorite(movieId, userId, description) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('description', description);
             if (typeof movieId !== 'string' || typeof userId !== 'string' || typeof description !== 'string')
                 throw new Error("Invalid input type");
             if (description.length > 200)
                 throw new Error("Description is too long");
-            // Buscar o crear la descripción para el usuario y la película específicos
             let existingDescription = yield description_1.default.findOne({ userId, favoriteId: movieId });
             if (!existingDescription) {
                 existingDescription = yield description_1.default.create({
@@ -123,22 +129,35 @@ class FavoritesService {
                 });
             }
             else {
-                // Si la descripción ya existe, actualizar su valor
                 existingDescription.description = description;
                 yield existingDescription.save();
             }
-            // Agregar la referencia de la descripción al array 'descriptions' en el documento de la película favorita
-            const updatedResult = yield favorites_1.default.findByIdAndUpdate(movieId, { $addToSet: { descriptions: existingDescription._id } });
-            if (!updatedResult) {
+            const updatedFavorite = yield favorites_1.default.findByIdAndUpdate(movieId, { $addToSet: { descriptions: existingDescription._id } }, { new: true, projection: { descriptions: 0, user: 0, __v: 0 } }).lean();
+            if (!updatedFavorite) {
                 throw new Error("Failed to update favorite");
             }
-            return updatedResult;
+            const result = Object.assign(Object.assign({}, updatedFavorite), { description: existingDescription.description });
+            return result;
         });
     }
     getDescriptions(userId, favoriteId) {
         return __awaiter(this, void 0, void 0, function* () {
             const descriptions = yield description_1.default.find({ userId, favoriteId });
-            return descriptions; // Devolver las descripciones encontradas o una lista vacía si no hay ninguna.
+            return descriptions;
+        });
+    }
+    addUserDescriptionsToFavorites(userId, favorites) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return Promise.all(favorites.map((favorite) => __awaiter(this, void 0, void 0, function* () {
+                const descriptionDoc = yield description_1.default.findOne({
+                    userId,
+                    favoriteId: favorite._id
+                });
+                const _a = favorite.toObject ?
+                    favorite.toObject() :
+                    favorite, { descriptions, user } = _a, cleanFavorite = __rest(_a, ["descriptions", "user"]);
+                return Object.assign(Object.assign({}, cleanFavorite), { description: (descriptionDoc === null || descriptionDoc === void 0 ? void 0 : descriptionDoc.description) || '' });
+            })));
         });
     }
 }
