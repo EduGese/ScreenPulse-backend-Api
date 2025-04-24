@@ -21,6 +21,9 @@ class OmdbController {
       const year = req.query.year as string || "";
       const page = req.query.page as string || "1";
 
+      console.log('🧩 Query recibida:', { title, type, year, page });
+
+
       if (!title.trim()) {
         res.status(400).json({ message: "Invalid request", code: "BAD_REQUEST" });
         return;
@@ -31,8 +34,9 @@ class OmdbController {
         res.status(400).json({ message: "Invalid request", code: "BAD_REQUEST" });
         return;
       }
-
+      console.log('📡 Haciendo petición a OMDB con:', { title, type, year, page });
       const omdbResponse: OmdbResponse = await omdbService.getOmdbMovies(title, type, year, page);
+      console.log('✅ Respuesta de OMDB:', omdbResponse);
 
       res.status(200).json(omdbResponse);
     } catch (error: any) {
