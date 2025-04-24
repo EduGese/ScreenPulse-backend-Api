@@ -22,16 +22,16 @@ class FavoritesService {
 
       movie.user = [userIdObjectId];
       favorite = await favoritesSchema.create(movie);
-      user.favorites.push(favorite._id);
+      user.favorites.push(favorite._id as Types.ObjectId);
     } else {
 
-      if (user.favorites.includes(existingFavorite._id)) {
+      if (user.favorites.includes(existingFavorite._id as Types.ObjectId)) {
         throw new Error("Favorite already exists for this user");
       }
 
-      user.favorites.push(existingFavorite._id);
+      user.favorites.push(existingFavorite._id as Types.ObjectId);
       favorite = existingFavorite;
-      existingFavorite.user.push(userIdObjectId);
+      existingFavorite.user.push(userIdObjectId as Types.ObjectId);
       await existingFavorite.save();
     }
 
