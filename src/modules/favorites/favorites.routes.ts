@@ -5,16 +5,16 @@ import favoritesController from './favorites.controller';
 const _router= express.Router();
 
 //Create 
-_router.post('/favorites/:userId', favoritesController.createFavorite);
+_router.post('/:userId', favoritesController.createFavorite);
 
 //Get all
-_router.get('/favorites/:userId', favoritesController.getFavorites);
+_router.get('/:userId', favoritesController.getFavorites);
 
 //Delete by Id
-_router.delete('/favorites/:id/:userId', favoritesController.deleteFavorite);
+_router.delete('/:id/:userId', favoritesController.deleteFavorite);
 
 //Update by Id
-_router.patch('/favorites/:id/:userId', favoritesController.updateFavorite);
+_router.patch('/:id/:userId', favoritesController.updateFavorite);
 
 
 export const router = _router;

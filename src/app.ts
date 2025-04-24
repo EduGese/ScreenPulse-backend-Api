@@ -21,9 +21,14 @@ app.use(cors(corsOptions));
 
 //routes
 app.use(express.json());
-app.use('/api',
- favoritesModule.router, omdbModule.router, userModule.router
- );
+// app.use('/api',
+//  favoritesModule.router, omdbModule.router, userModule.router
+//  );
+// app.ts
+app.use('/api/favorites', favoritesModule.router);
+app.use('/api/omdb', omdbModule.router);
+app.use('/api/user', userModule.router);
+
 
 
 // server listenening on config.server.port

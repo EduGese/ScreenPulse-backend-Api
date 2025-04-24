@@ -7,9 +7,9 @@ const _router = express.Router();
 
 
 //Login
-_router.post("/user/login", userController.loginUser);
+_router.post("/login", userController.loginUser);
 
 //Register
-_router.post("/user/register", userController.registertUser);
+_router.post("/register", userController.registertUser);
 
 export const router = _router;
