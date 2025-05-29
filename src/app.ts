@@ -4,6 +4,7 @@ import cors from 'cors';
 
 import config from './config/config';
 import { favoritesModule, omdbModule, userModule } from './modules';
+import { errorHandler } from "./middlewares/errorHandler";
 
 //execute express
 const app = express();
@@ -18,18 +19,14 @@ var corsOptions = {
   origin: config.client.url,
 }
 app.use(cors(corsOptions));
+app.use(express.json());
 
 //routes
-app.use(express.json());
-// app.use('/api',
-//  favoritesModule.router, omdbModule.router, userModule.router
-//  );
-// app.ts
 app.use('/api/favorites', favoritesModule.router);
 app.use('/api/omdb', omdbModule.router);
 app.use('/api/user', userModule.router);
 
-
+app.use(errorHandler);
 
 // server listenening on config.server.port
 app.listen(port, () => {
