@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
-import { OmdbResponse } from "../../interfaces/omdb.interface";
 import omdbService from "./omdb.service";
+import { OmdbItemDetailResponse, OmdbSearchResponse } from "../../interfaces/omdb.interface";
 
 
 class OmdbController {
@@ -14,49 +14,27 @@ class OmdbController {
    * @param {express.Next} next is the middleware to continue with code execution
    * @returns {Array} with all documents matching the conditions
    */
-  async getOmdbMovies(req: Request, res: Response): Promise<void> {
+  async getOmdbMovies(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const title = req.query.title as string || "";
       const type = req.query.type as string || "";
       const year = req.query.year as string || "";
       const page = req.query.page as string || "1";
-
-      console.log('🧩 Query recibida:', { title, type, year, page });
-
-
-      if (!title.trim()) {
-        res.status(400).json({ message: "Invalid request", code: "BAD_REQUEST" });
-        return;
-      }
-
-      if (page && isNaN(Number(page))) {
-        console.warn("Page is not a number: this is likely a frontend bug.");
-        res.status(400).json({ message: "Invalid request", code: "BAD_REQUEST" });
-        return;
-      }
-      console.log('📡 Haciendo petición a OMDB con:', { title, type, year, page });
-      const omdbResponse: OmdbResponse = await omdbService.getOmdbMovies(title, type, year, page);
-      console.log('✅ Respuesta de OMDB:', omdbResponse);
+      
+      const omdbResponse: OmdbSearchResponse = await omdbService.getOmdbMovies(title, type, year, page);
 
       res.status(200).json(omdbResponse);
-    } catch (error: any) {
-      const status = error.status || 500;
-      const message = error.message || "Internal server error";
-      const code = error.code || "INTERNAL_ERROR";
-      res.status(status).json({ message, code});
+    } catch (error: unknown) {
+      next(error);
     }
   }
-  async getMovieInfo(req: Request, res: Response): Promise<void> {
+  async getMovieInfo(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-
-      const omdbResponse: OmdbResponse = await omdbService.getMovieInfo(req.params.id);
+      const omdbResponse: OmdbItemDetailResponse = await omdbService.getMovieInfo(req.params.id);
       res.status(200).json(omdbResponse);
 
-    } catch (error:any) {
-      const status = error.status || 500;
-      const message = error.message || "Internal server error";
-      const code = error.code || "INTERNAL_ERROR";
-      res.status(status).json({ message, code });
+    } catch (error: unknown) {
+      next(error);
     }
   }
 }

@@ -1,19 +1,16 @@
 import axios, { AxiosResponse } from "axios";
-import { OmdbResponse,  } from "../../interfaces/omdb.interface";
-import { MediaItem } from "../../interfaces/favorites.interface";
-interface OmdbMovieRaw {
-  Title: string;
-  Year: string;
-  imdbID: string;
-  Type: string;
-  Poster: string;
-}
+import { ApiError } from "../../errors/apiError";
+import { OmdbItemDetailResponse, OmdbSearchResponse  } from "../../interfaces/omdb.interface";
+
+
 
 class OmdbService {
-  async getOmdbMovies(title: string, type: string, year: string, page: String): Promise<any> {
+  async getOmdbMovies(title: string, type: string, year: string, page: string): Promise<OmdbSearchResponse> {
     type = type === "all" ? '' : type;
+    page = page ? page : "1";
+
     try {
-      const response: AxiosResponse<OmdbResponse> = await axios.get(
+      const response: AxiosResponse<OmdbSearchResponse> = await axios.get(
         process.env.OMDB_URL || "",
         {
           params: {
@@ -25,8 +22,8 @@ class OmdbService {
           },
         }
       );
-      if (response.data.Search) {
-        response.data.Search = response.data.Search.map((item: any) => {
+      if (response.data.Response === 'True') {
+        response.data.Search = response.data.Search.map((item) => {
           const newItem: any = {}
       
           for (const key in item) {
@@ -43,21 +40,13 @@ class OmdbService {
       return response.data;
 
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401) {
-          throw { status: 401, message: "Invalid OMDB API key", code: "INVALID_API_KEY" };
-        }
-        if (error.code === "ECONNABORTED") {
-          throw { status: 504, message: "OMDB request timed out", code: "TIMEOUT" };
-        }
-      }
-      throw { status: 500, message: "Internal server error", code: "INTERNAL_ERROR" };
+      this.handleAxiosError(error);
       
     }
   }
-  async getMovieInfo(id: string): Promise<any> {
+  async getMovieInfo(id: string): Promise<OmdbItemDetailResponse> {
     try {
-      const response: AxiosResponse<OmdbResponse> = await axios.get(
+      const response: AxiosResponse<OmdbItemDetailResponse> = await axios.get(
         process.env.OMDB_URL || "",
         {
           params: {
@@ -68,17 +57,21 @@ class OmdbService {
       );
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
+      this.handleAxiosError(error);
+     
+    }
+  }
+
+  private handleAxiosError(error: unknown): never {
+          if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
-          throw { status: 401, message: "Invalid OMDB API key", code: "INVALID_API_KEY" };
+          throw new ApiError(401, "Invalid OMDB API key", "INVALID_API_KEY");
         }
         if (error.code === "ECONNABORTED") {
-          throw { status: 504, message: "OMDB request timed out", code: "TIMEOUT" };
+           throw new ApiError(504, "OMDB request timed out", "TIMEOUT");
         }
       }
-      throw { status: 500, message: "Internal server error", code: "INTERNAL_ERROR" };
-      
-    }
+      throw new ApiError(500, "Internal server error", "INTERNAL_ERROR");
   }
 }
 

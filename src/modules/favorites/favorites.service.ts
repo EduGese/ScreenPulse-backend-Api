@@ -1,51 +1,44 @@
 import { SortOrder, Types } from "mongoose";
-import { MediaItem } from "../../interfaces/favorites.interface";
+import { FavoritesListWithMetadata, MediaItem } from "../../interfaces/favorites.interface";
 import favoritesSchema from "../../models/favorites";
 import userSchema from "../../models/user";
 import descriptionSchema from "../../models/description";
+import { ApiError } from "../../errors/apiError";
 
 
 class FavoritesService {
-  async createFavorite(userId: string, movie: MediaItem): Promise<any> {
-    if (typeof userId !== 'string') throw new Error("Invalid input type");
+  async createFavorite(userId: string, movie: MediaItem): Promise<MediaItem> {
     const user = await userSchema.findById(userId);
     if (!user) {
-      throw new Error("User not found");
+      throw new ApiError(404, "User not found", "USER_NOT_FOUND");
     }
     let favorite;
-
     const existingFavorite = await favoritesSchema.findOne({
       imdbID: movie.imdbID,
     });
     const userIdObjectId = new Types.ObjectId(userId);
     if (!existingFavorite) {
-
       movie.user = [userIdObjectId];
       favorite = await favoritesSchema.create(movie);
       user.favorites.push(favorite._id as Types.ObjectId);
     } else {
 
       if (user.favorites.includes(existingFavorite._id as Types.ObjectId)) {
-        throw new Error("Favorite already exists for this user");
+        throw new ApiError(409, "Favorite already exist for this user", "FAVORITE_EXISTS");
       }
-
       user.favorites.push(existingFavorite._id as Types.ObjectId);
       favorite = existingFavorite;
       existingFavorite.user.push(userIdObjectId as Types.ObjectId);
       await existingFavorite.save();
     }
-
     await user.save();
     return favorite;
   }
 
-
-  async getFavorites(userId: string, page: number, pageSize: number, sortField: string, sortOrder: number, mediaType?: string, searchTerm?: string): Promise<any> {
-    console.log("getFavorites", userId, page, pageSize, sortField, sortOrder, mediaType, searchTerm);
-    if (typeof userId !== 'string') throw new Error("Invalid input type");
+  async getFavorites(userId: string, page: number, pageSize: number, sortField: string, sortOrder: number, mediaType?: string, searchTerm?: string): Promise<FavoritesListWithMetadata> {
     const user = await userSchema.findById(userId);
     if (!user) {
-      throw new Error("User not found");
+       throw new ApiError(404, "User not found", "USER_NOT_FOUND");
     }
     const sorting: Record<string, SortOrder> = { [sortField]: sortOrder as SortOrder };
     const filter = {
@@ -75,16 +68,12 @@ class FavoritesService {
     }
   }
 
-  async deleteFavorite(movieId: string, userId: string): Promise<any> {
-    if (typeof movieId !== 'string' || typeof userId !== 'string') {
-      throw new Error("Invalid input type");
-    }
-
+  async deleteFavorite(movieId: string, userId: string): Promise<void> {
     const favorite = await favoritesSchema.findById(movieId);
-    if (!favorite) throw new Error("Favorite not found");
+    if (!favorite) throw new ApiError(400, "Favorite not found", "FAVORITE_NOT_FOUND");
 
     const user = await userSchema.findById(userId);
-    if (!user) throw new Error("User not found");
+    if (!user) throw new ApiError(404, "User not found", "USER_NOT_FOUND");
 
     user.favorites = user.favorites.filter(fav => fav.toString() !== movieId);
     await user.save();
@@ -102,10 +91,7 @@ class FavoritesService {
     }
   }
 
-
   async updateFavorite(movieId: string, userId: string, description: string): Promise<any> {
-    if (typeof movieId !== 'string' || typeof userId !== 'string' || typeof description !== 'string') throw new Error("Invalid input type");
-    if (description.length > 200) throw new Error("Description is too long");
 
     let existingDescription = await descriptionSchema.findOne({ userId, favoriteId: movieId });
     if (!existingDescription) {
@@ -126,7 +112,7 @@ class FavoritesService {
     ).lean();
 
     if (!updatedFavorite) {
-      throw new Error("Failed to update favorite");
+      throw new ApiError(404, "Favorite not found or could not be updated", "FAVORITE_NOT_FOUND");
     }
     const result = {
       ...updatedFavorite,
@@ -136,13 +122,7 @@ class FavoritesService {
     return result;
   }
 
-
-  async getDescriptions(userId: string, favoriteId: string): Promise<any> {
-    const descriptions = await descriptionSchema.find({ userId, favoriteId });
-    return descriptions;
-  }
-
-  async addUserDescriptionsToFavorites(userId: string, favorites: MediaItem[]): Promise<MediaItem[]> {
+  private async addUserDescriptionsToFavorites(userId: string, favorites: MediaItem[]): Promise<MediaItem[]> {
     return Promise.all(favorites.map(async (favorite) => {
       const descriptionDoc = await descriptionSchema.findOne({
         userId,

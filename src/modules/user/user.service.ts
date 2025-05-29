@@ -2,12 +2,13 @@ import userSchema from "../../models/user";
 import { User } from "../../interfaces/user.interface";
 import bcriptjs from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
+import { ApiError } from "../../errors/apiError";
 
 class UserService {
   async loginUser(email: string, password: string) {
     const user = await userSchema.findOne({ email: email });
     if (!user || !bcriptjs.compareSync(password, user.password)) {
-      throw new Error("Invalid credentials");
+      throw new ApiError(401, "Invalid login credentials", "AUTH_ERROR");
     }
     return {
       token: UserService.createToken(user),
@@ -22,7 +23,7 @@ class UserService {
   async registerUser(userData: User) {
     const userExist = await userSchema.findOne({ email: userData.email });
     if (userExist) {
-      throw new Error("User already exists");
+      throw new ApiError(409, "User already exists", "USER_EXISTS");
     }
     userData.password = bcriptjs.hashSync(userData.password, 12);
     const user = await userSchema.create(userData);
