@@ -1,15 +1,114 @@
 import express from "express";
 
 import userController from "./user.controller";
+import { loginValidator, registerValidator } from "../../validators/userValidators";
+import { validate } from "../../middlewares/validate";
 
 const _router = express.Router();
 
+/**
+ * @openapi
+ * /login:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: User login
+ *     description: Authenticate a user with email and password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 example: P@ssw0rd
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *       401:
+ *         description: Invalid credentials
+ *       400:
+ *         description: Validation error
+ *       500: 
+ *         description: Internal server error
+ */
+_router.post("/login", loginValidator, validate, userController.loginUser);
 
-
-//Login
-_router.post("/login", userController.loginUser);
-
-//Register
-_router.post("/register", userController.registertUser);
+/**
+ * @openapi
+ * /register:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: Register a new user
+ *     description: Create a new user account.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John Doe
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 example: P@ssw0rd
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *       409:
+ *         description: User already exists
+ *       400:
+ *         description: Validation error
+ *       500: 
+ *         description: Internal server error
+ */
+_router.post("/register", registerValidator, validate, userController.registertUser);
 
 export const router = _router;
