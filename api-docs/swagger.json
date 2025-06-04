@@ -1,0 +1,172 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ScreenPulse API",
+    "version": "1.0.0",
+    "description": "Documentation of User, Omdb and Favorites APIs",
+    "contact": {
+      "name": "Eduardo González",
+      "email": "your@email.com",
+      "url": "https://github.com/yourrepo"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local server"
+    },
+    {
+      "url": "<your live url here>",
+      "description": "Live server"
+    }
+  ],
+  "paths": {
+    "/api/user/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "User login",
+        "description": "Authenticate a user with email and password.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "P@ssw0rd"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/user/register": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Register a new user",
+        "description": "Create a new user account.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "P@ssw0rd"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "409": {
+            "description": "User already exists"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": []
+}

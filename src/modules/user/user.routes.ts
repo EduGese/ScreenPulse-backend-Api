@@ -8,7 +8,7 @@ const _router = express.Router();
 
 /**
  * @openapi
- * /login:
+ * /api/user/login:
  *   post:
  *     tags:
  *       - User
@@ -61,7 +61,7 @@ _router.post("/login", loginValidator, validate, userController.loginUser);
 
 /**
  * @openapi
- * /register:
+ * /api/user/register:
  *   post:
  *     tags:
  *       - User
