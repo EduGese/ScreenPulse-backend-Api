@@ -5,6 +5,8 @@ import cors from 'cors';
 import config from './config/config';
 import { favoritesModule, omdbModule, userModule } from './modules';
 import { errorHandler } from "./middlewares/errorHandler";
+import setupSwagger from './utils/swagger';
+
 
 //execute express
 const app = express();
@@ -25,6 +27,8 @@ app.use(express.json());
 app.use('/api/favorites', favoritesModule.router);
 app.use('/api/omdb', omdbModule.router);
 app.use('/api/user', userModule.router);
+
+setupSwagger(app);
 
 app.use(errorHandler);
 
