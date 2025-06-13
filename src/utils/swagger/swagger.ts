@@ -28,7 +28,7 @@ export const options = {
         description: 'Local server'
       },
       {
-        url: "<your live url here>",
+        url: "https://screenpulse-api.onrender.com",
         description: "Live server"
       },
     ],
