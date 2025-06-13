@@ -1,5 +1,3 @@
-import description from "../../../models/description";
-
 export const favoritesSchema = {
     CreateFavoriteRequest: {
         type: 'object',

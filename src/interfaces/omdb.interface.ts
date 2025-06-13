@@ -21,7 +21,7 @@ export interface OmdbErrorResponse {
 }
 
 
-export type OmdbSearchResponse = OmdbSearchSuccess | OmdbErrorResponse;
+export type OmdbItemMediaListResponse = OmdbSearchSuccess | OmdbErrorResponse;
 
 
 

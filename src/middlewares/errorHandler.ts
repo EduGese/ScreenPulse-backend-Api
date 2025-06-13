@@ -13,21 +13,21 @@ export function errorHandler(
 
   if (err instanceof ApiError) {
     res.status(err.status).json({
-      message: err.message,
+      error: err.message,
       code: err.code,
-      status: err.status
+      status: err.status,
     });
   } else if (err instanceof Error) {
     res.status(500).json({
-      message: err.message,
+      error: err.message,
       code: "INTERNAL_ERROR",
-      status: 500
+      status: 500,
     });
   } else {
     res.status(500).json({
-      message: "Internal server error",
+      error: "Internal server error",
       code: "INTERNAL_ERROR",
-      status: 500
+      status: 500,
     });
   }
 }

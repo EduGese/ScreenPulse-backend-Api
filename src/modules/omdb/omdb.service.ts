@@ -1,16 +1,16 @@
 import axios, { AxiosResponse } from "axios";
 import { ApiError } from "../../errors/apiError";
-import { OmdbItemDetailResponse, OmdbSearchResponse  } from "../../interfaces/omdb.interface";
+import { OmdbItemDetailResponse, OmdbItemMediaListResponse  } from "../../interfaces/omdb.interface";
 
 
 
 class OmdbService {
-  async getOmdbMovies(title: string, type: string, year: string, page: string): Promise<OmdbSearchResponse> {
+  async getOmdbItemMediaList(title: string, type: string, year: string, page: string): Promise<OmdbItemMediaListResponse> {
     type = type === "all" ? '' : type;
     page = page ? page : "1";
 
     try {
-      const response: AxiosResponse<OmdbSearchResponse> = await axios.get(
+      const response: AxiosResponse<OmdbItemMediaListResponse> = await axios.get(
         process.env.OMDB_URL || "",
         {
           params: {
@@ -44,7 +44,7 @@ class OmdbService {
       
     }
   }
-  async getMovieInfo(id: string): Promise<OmdbItemDetailResponse> {
+  async getOmdbItemMediaInfo(id: string): Promise<OmdbItemDetailResponse> {
     try {
       const response: AxiosResponse<OmdbItemDetailResponse> = await axios.get(
         process.env.OMDB_URL || "",
@@ -64,9 +64,6 @@ class OmdbService {
 
   private handleAxiosError(error: unknown): never {
           if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401) {
-          throw new ApiError(401, "Invalid OMDB API key", "INVALID_API_KEY");
-        }
         if (error.code === "ECONNABORTED") {
            throw new ApiError(504, "OMDB request timed out", "TIMEOUT");
         }

@@ -1,5 +1,5 @@
 import mongoose , {Schema} from 'mongoose';
-import { MediaItem } from '../interfaces/favorites.interface';
+import { MediaItemDocument } from '../interfaces/favorites.interface';
 
 const favoritesSchema: Schema = new mongoose.Schema({
     title: {
@@ -42,5 +42,5 @@ const favoritesSchema: Schema = new mongoose.Schema({
 
 
 
-export default mongoose.model<MediaItem>('MediaItem', favoritesSchema);
+export default mongoose.model<MediaItemDocument>('MediaItem', favoritesSchema);
 

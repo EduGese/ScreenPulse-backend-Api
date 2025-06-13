@@ -20,7 +20,6 @@ var corsOptions = {
   maxAge: 500,
   origin: config.client.url,
 }
-
 app.use(cors(corsOptions));
 app.use(express.json());
 

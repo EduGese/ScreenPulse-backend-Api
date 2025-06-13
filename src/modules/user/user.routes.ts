@@ -5,9 +5,15 @@ import { loginValidator, registerValidator } from "../../validators/userValidato
 import { validate } from "../../middlewares/validate";
 
 const _router = express.Router();
+/**
+ * @swagger
+ * tags:
+ *   name: User
+ *   description: User management operations
+ */
 
 /**
- * @openapi
+ * @swagger
  * /api/user/login:
  *   post:
  *     tags:
@@ -19,48 +25,37 @@ const _router = express.Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 example: user@example.com
- *               password:
- *                 type: string
- *                 example: P@ssw0rd
+ *             $ref: '#/components/schemas/LoginRequest'
  *     responses:
  *       200:
  *         description: Successful login
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *                 user:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                     email:
- *                       type: string
- *                     name:
- *                       type: string
+ *               $ref: '#/components/schemas/LoginResponse'
  *       401:
  *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UnauthorizedError'
  *       400:
  *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
  *       500: 
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalServerError'
  */
 _router.post("/login", loginValidator, validate, userController.loginUser);
 
 /**
- * @openapi
+ * @swagger
  * /api/user/register:
  *   post:
  *     tags:
@@ -72,43 +67,34 @@ _router.post("/login", loginValidator, validate, userController.loginUser);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - name
- *               - email
- *               - password
- *             properties:
- *               name:
- *                 type: string
- *                 example: John Doe
- *               email:
- *                 type: string
- *                 format: email
- *                 example: john@example.com
- *               password:
- *                 type: string
- *                 example: P@ssw0rd
+ *             $ref: '#/components/schemas/RegisterRequest'
  *     responses:
  *       201:
  *         description: User created successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                 email:
- *                   type: string
- *                 name:
- *                   type: string
+ *               $ref: '#/components/schemas/RegisterResponse'
  *       409:
  *         description: User already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ConflictError'
  *       400:
  *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
  *       500: 
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalServerError'
  */
+
 _router.post("/register", registerValidator, validate, userController.registertUser);
 
 export const router = _router;

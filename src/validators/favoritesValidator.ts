@@ -81,8 +81,8 @@ export const updateFavoriteValidator = [
         .isString().withMessage('userId must be a string')
         .isMongoId().withMessage('userId must be a valid MongoDB ObjectId'),
     body('description')
-        .trim()
-        .notEmpty().withMessage('Description is required')
+        .exists({ checkNull: true }) 
+        .withMessage('Description is required')
         .isString().withMessage('Description must be a string')
         .isLength({ max: 200 }).withMessage('Description must be at most 200 characters long')
 
