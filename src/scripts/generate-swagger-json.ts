@@ -1,6 +1,6 @@
 import fs from 'fs';
 import swaggerJsdoc from 'swagger-jsdoc';
-import { options } from '../utils/swagger';
+import { options } from '../utils/swagger/swagger';
 
 const swaggerSpec = swaggerJsdoc(options);
 
