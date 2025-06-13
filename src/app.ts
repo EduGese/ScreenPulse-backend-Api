@@ -5,7 +5,7 @@ import cors from 'cors';
 import config from './config/config';
 import { favoritesModule, omdbModule, userModule } from './modules';
 import { errorHandler } from "./middlewares/errorHandler";
-import setupSwagger from './utils/swagger';
+import setupSwagger from './utils/swagger/swagger';
 
 
 //execute express
@@ -20,6 +20,7 @@ var corsOptions = {
   maxAge: 500,
   origin: config.client.url,
 }
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
