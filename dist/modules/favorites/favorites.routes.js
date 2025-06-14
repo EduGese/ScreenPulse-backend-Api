@@ -19,6 +19,8 @@ const _router = express_1.default.Router();
  * @swagger
  * /api/favorites/{userId}:
  *   post:
+ *     security:
+ *       - ApiKeyAuth: []
  *     tags: [Favorites]
  *     security:
  *       - ApiKeyAuth: []
@@ -80,6 +82,8 @@ _router.post('/:userId', favoritesValidator_1.createFavoriteValidator, validate_
  * @swagger
  * /api/favorites/{userId}:
  *   get:
+ *     security:
+ *       - ApiKeyAuth: []
  *     tags:
  *       - Favorites
  *     summary: Get user's favorites
@@ -134,6 +138,8 @@ _router.get('/:userId', favoritesValidator_1.getFavoritesValidator, validate_1.v
  * @swagger
  * /api/favorites/{id}/{userId}:
  *   delete:
+ *     security:
+ *       - ApiKeyAuth: []
  *     tags:
  *       - Favorites
  *     summary: Delete a favorite
@@ -198,6 +204,8 @@ _router.delete('/:id/:userId', favoritesValidator_1.deleteFavoriteValidator, val
  * @swagger
  * /api/favorites/{id}/{userId}:
  *   patch:
+ *     security:
+ *       - ApiKeyAuth: []
  *     tags:
  *      - Favorites
  *     summary: Update a favorite

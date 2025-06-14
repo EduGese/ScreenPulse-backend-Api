@@ -19,6 +19,8 @@ const _router = express_1.default.Router();
  * @swagger
  * /api/user/login:
  *   post:
+ *     security:
+ *       - ApiKeyAuth: []
  *     tags:
  *       - User
  *     summary: User login
@@ -60,6 +62,8 @@ _router.post("/login", userValidators_1.loginValidator, validate_1.validate, use
  * @swagger
  * /api/user/register:
  *   post:
+ *     security:
+ *       - ApiKeyAuth: []
  *     tags:
  *       - User
  *     summary: Register a new user

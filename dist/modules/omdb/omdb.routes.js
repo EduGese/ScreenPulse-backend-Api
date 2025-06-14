@@ -19,9 +19,6 @@ const _router = express_1.default.Router();
 /**
  * @swagger
  * /api/omdb:
- *   get:
- *     security:
- *       - ApiKeyAuth: []
  *     tags:
  *       - Omdb
  *     summary: Search media items in OMDB
