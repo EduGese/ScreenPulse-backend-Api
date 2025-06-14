@@ -6,9 +6,95 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = void 0;
 const express_1 = __importDefault(require("express"));
 const user_controller_1 = __importDefault(require("./user.controller"));
+const userValidators_1 = require("../../validators/userValidators");
+const validate_1 = require("../../middlewares/validate");
 const _router = express_1.default.Router();
-//Login
-_router.post("/login", user_controller_1.default.loginUser);
-//Register
-_router.post("/register", user_controller_1.default.registertUser);
+/**
+ * @swagger
+ * tags:
+ *   name: User
+ *   description: User management operations
+ */
+/**
+ * @swagger
+ * /api/user/login:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: User login
+ *     description: Authenticate a user with email and password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       401:
+ *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UnauthorizedError'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalServerError'
+ */
+_router.post("/login", userValidators_1.loginValidator, validate_1.validate, user_controller_1.default.loginUser);
+/**
+ * @swagger
+ * /api/user/register:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: Register a new user
+ *     description: Create a new user account.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterRequest'
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/RegisterResponse'
+ *       409:
+ *         description: User already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ConflictError'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalServerError'
+ */
+_router.post("/register", userValidators_1.registerValidator, validate_1.validate, user_controller_1.default.registertUser);
 exports.router = _router;

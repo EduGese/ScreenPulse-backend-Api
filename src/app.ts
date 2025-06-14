@@ -15,7 +15,7 @@ const port = config.server.port;
 //CORS
 var corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
   optionsSuccessStatus: 204,
   maxAge: 500,
   origin: config.client.url,

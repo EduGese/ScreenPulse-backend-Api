@@ -1,0 +1,63 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.favoritesParameters = void 0;
+exports.favoritesParameters = {
+    UserIdParam: {
+        name: 'userId',
+        in: 'path',
+        required: true,
+        example: '60c72b2f9b1e8b001c8e4d3a',
+        schema: { type: 'string' },
+        description: 'ID of the user to retrieve favorites for.'
+    },
+    MediaItemIdParams: {
+        name: 'mediaItemId',
+        in: 'path',
+        required: true,
+        example: '6847f9acf8a5c5ba5138bf2b',
+        schema: { type: 'string' },
+        description: 'ID of the media item to add or update in favorites.'
+    },
+    FavoritesPageParam: {
+        name: 'page',
+        in: 'query',
+        required: false,
+        schema: { type: 'integer', minimum: 1 },
+        description: 'Page number for pagination of favorites (default: 1).'
+    },
+    FavoritesPageSizeParam: {
+        name: 'pageSize',
+        in: 'query',
+        required: false,
+        schema: { type: 'integer', minimum: 1 },
+        description: 'Number of favorites to return per page (default: 10).'
+    },
+    FavoritesSortFieldParam: {
+        name: 'sort',
+        in: 'query',
+        required: false,
+        schema: { type: 'string', enum: ['title', 'year'] },
+        description: 'Field to sort favorites by (default: title).'
+    },
+    FavoritesSortOrderParam: {
+        name: 'order',
+        in: 'query',
+        required: false,
+        schema: { type: 'integer', enum: [1, -1], default: 1 },
+        description: 'Sort order (1 for ascending, -1 for descending; default: 1).'
+    },
+    FavoritesMediaTypeParam: {
+        name: 'mediaType',
+        in: 'query',
+        required: false,
+        schema: { type: 'string', enum: ['movie', 'series', 'game', 'all'], default: 'all' },
+        description: 'Filter favorites by media type (movie, series, game, or all; default: all).'
+    },
+    FavoritesSearchTermParam: {
+        name: 'searchTerm',
+        in: 'query',
+        required: false,
+        schema: { type: 'string' },
+        description: 'Search term to filter favorites by title.'
+    }
+};
