@@ -3,16 +3,16 @@
   "info": {
     "title": "ScreenPulse API",
     "version": "1.0.0",
-    "description": "Documentation of User, Omdb and Favorites APIs",
+    "description": "ScreenPulse API documentation.",
     "contact": {
       "name": "Eduardo González",
       "email": "your@email.com",
-      "url": "https://github.com/yourrepo"
+      "url": "https://github.com/EduGese/ScreenPulse-backend-Api"
     }
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
+      "url": "http://localhost:9000",
       "description": "Local server"
     },
     {
@@ -20,7 +20,1401 @@
       "description": "Live server"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "API key for writing operations on ScreenPulse API. You can obtain it contacting the administrator. Key will be validated when performing requests to endpoints that modify data. For read-only operations, the API key is not required."
+      }
+    },
+    "security": [
+      {
+        "ApiKeyAuth": []
+      }
+    ],
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "P@ssw0rd"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "60b8d295f1d2c916c8b6e7f1"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "example": "user@example.com"
+              },
+              "name": {
+                "type": "string",
+                "example": "John Doe"
+              }
+            }
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "P@ssw0rd"
+          }
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "role": {
+            "type": "string",
+            "example": "regular"
+          },
+          "favorites": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": []
+            }
+          },
+          "_id": {
+            "type": "string",
+            "example": "60b8d295f1d2c916c8b6e7f1"
+          },
+          "__v": {
+            "type": "integer",
+            "example": 0
+          }
+        }
+      },
+      "UnauthorizedError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Invalid login credentials"
+          },
+          "code": {
+            "type": "string",
+            "example": "AUTH_ERROR"
+          },
+          "status": {
+            "type": "integer",
+            "example": 401
+          }
+        }
+      },
+      "ConflictError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "User already exists"
+          },
+          "code": {
+            "type": "string",
+            "example": "USER_EXISTS"
+          },
+          "status": {
+            "type": "integer",
+            "example": 409
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Validation failed"
+          },
+          "code": {
+            "type": "string",
+            "example": "VALIDATION_ERROR"
+          },
+          "status": {
+            "type": "integer",
+            "example": 400
+          },
+          "errors": {
+            "type": "array",
+            "description": "Array of validation errors. Each object describes a single validation failure.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "msg": {
+                  "type": "string",
+                  "example": "Email is invalid"
+                },
+                "param": {
+                  "type": "string",
+                  "example": "email"
+                },
+                "location": {
+                  "type": "string",
+                  "example": "body"
+                },
+                "value": {
+                  "type": "string",
+                  "example": "not-an-email",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "msg",
+                "param",
+                "location"
+              ]
+            }
+          }
+        },
+        "required": [
+          "error",
+          "code",
+          "status",
+          "errors"
+        ]
+      },
+      "InternalServerError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Internal server error"
+          },
+          "code": {
+            "type": "string",
+            "example": "INTERNAL_ERROR"
+          },
+          "status": {
+            "type": "integer",
+            "example": 500
+          }
+        },
+        "required": [
+          "message",
+          "code",
+          "status"
+        ]
+      },
+      "OmdbItemMediaListResponse": {
+        "type": "object",
+        "properties": {
+          "Search": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "example": "Rambo"
+                },
+                "year": {
+                  "type": "string",
+                  "example": "2010"
+                },
+                "imdbID": {
+                  "type": "string",
+                  "example": "tt1375666"
+                },
+                "type": {
+                  "type": "string",
+                  "example": "movie"
+                },
+                "poster": {
+                  "type": "string",
+                  "example": "https://example.com/poster.jpg"
+                }
+              }
+            }
+          },
+          "totalResults": {
+            "type": "string",
+            "example": "100"
+          },
+          "Response": {
+            "type": "string",
+            "example": "True"
+          }
+        }
+      },
+      "OmdbItemDetailResponse": {
+        "type": "object",
+        "properties": {
+          "Title": {
+            "type": "string",
+            "example": "Inception"
+          },
+          "Year": {
+            "type": "string",
+            "example": "2010"
+          },
+          "Rated": {
+            "type": "string",
+            "example": "PG-13"
+          },
+          "Released": {
+            "type": "string",
+            "example": "16 Jul 2010"
+          },
+          "Runtime": {
+            "type": "string",
+            "example": "148 min"
+          },
+          "Genre": {
+            "type": "string",
+            "example": "Action, Adventure, Sci-Fi"
+          },
+          "Director": {
+            "type": "string",
+            "example": "Christopher Nolan"
+          },
+          "Writer": {
+            "type": "string",
+            "example": "Christopher Nolan"
+          },
+          "Actors": {
+            "type": "string",
+            "example": "Leonardo DiCaprio, Joseph Gordon-Levitt, Ellen Page"
+          },
+          "Plot": {
+            "type": "string",
+            "example": "A thief who steals corporate secrets through the use of dream-sharing technology..."
+          },
+          "Language": {
+            "type": "string",
+            "example": "English, Japanese, French"
+          },
+          "Country": {
+            "type": "string",
+            "example": "USA, UK"
+          },
+          "Awards": {
+            "type": "string",
+            "example": "Won 4 Oscars. Another 38 wins & 74 nominations."
+          },
+          "Poster": {
+            "type": "string",
+            "example": "https://example.com/poster.jpg"
+          },
+          "Ratings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "Source": {
+                  "type": "string",
+                  "example": "Internet Movie Database"
+                },
+                "Value": {
+                  "type": "string",
+                  "example": "8.8/10"
+                }
+              }
+            }
+          },
+          "Metascore": {
+            "type": "string",
+            "example": "74"
+          },
+          "imdbRating": {
+            "type": "string",
+            "example": "8.8"
+          },
+          "imdbVotes": {
+            "type": "string",
+            "example": "1,000,000"
+          },
+          "imdbID": {
+            "type": "string",
+            "example": "tt1375666"
+          },
+          "Type": {
+            "type": "string",
+            "example": "movie"
+          },
+          "DVD": {
+            "type": "string",
+            "example": "10 Sep 2010"
+          },
+          "BoxOffice": {
+            "type": "string",
+            "example": "$292,568,851"
+          },
+          "Production": {
+            "type": "string",
+            "example": "Warner Bros."
+          },
+          "Website": {
+            "type": "string",
+            "example": "http://www.inceptionmovie.com/"
+          },
+          "Response": {
+            "type": "string",
+            "example": "True"
+          }
+        }
+      },
+      "OmdbErrorResponse": {
+        "type": "object",
+        "properties": {
+          "Response": {
+            "type": "string",
+            "example": "False"
+          },
+          "Error": {
+            "type": "string",
+            "example": "Movie not found!"
+          }
+        }
+      },
+      "OmdbTimeOutError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "OMDB request timed out"
+          },
+          "code": {
+            "type": "string",
+            "example": "TIMEOUT"
+          },
+          "status": {
+            "type": "integer",
+            "example": 504
+          }
+        }
+      },
+      "CreateFavoriteRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the media item to be added to favorites",
+            "required": true,
+            "example": "Inception"
+          },
+          "year": {
+            "type": "string",
+            "description": "Year of release of the media item",
+            "required": true,
+            "example": "2010"
+          },
+          "imdbID": {
+            "type": "string",
+            "description": "IMDb ID of the media item",
+            "required": true,
+            "example": "tt1375666"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the media item (e.g., movie, series)",
+            "required": true,
+            "example": "movie"
+          },
+          "poster": {
+            "type": "string",
+            "description": "URL of the poster image for the media item",
+            "required": true,
+            "example": "https://example.com/poster.jpg"
+          }
+        },
+        "required": [
+          "title",
+          "year",
+          "imdbID",
+          "type",
+          "poster"
+        ]
+      },
+      "CreateFavoriteResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "60c72b2f9b1e8b001c8e4d3a"
+          },
+          "title": {
+            "type": "string",
+            "example": "Inception"
+          },
+          "year": {
+            "type": "string",
+            "example": "2010"
+          },
+          "imdbID": {
+            "type": "string",
+            "example": "tt1375666"
+          },
+          "type": {
+            "type": "string",
+            "example": "movie"
+          },
+          "poster": {
+            "type": "string",
+            "example": "https://example.com/poster.jpg"
+          }
+        }
+      },
+      "GetFavoritesResponse": {
+        "type": "object",
+        "properties": {
+          "favorites": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "example": "60c72b2f9b1e8b001c8e4d3a"
+                },
+                "title": {
+                  "type": "string",
+                  "example": "Inception"
+                },
+                "year": {
+                  "type": "string",
+                  "example": "2010"
+                },
+                "imdbID": {
+                  "type": "string",
+                  "example": "tt1375666"
+                },
+                "type": {
+                  "type": "string",
+                  "example": "movie"
+                },
+                "poster": {
+                  "type": "string",
+                  "example": "https://example.com/poster.jpg"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2021-06-14T10:00:00Z"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2021-06-14T10:00:00Z"
+                },
+                "__v": {
+                  "type": "integer",
+                  "example": 0
+                },
+                "description": {
+                  "type": "string",
+                  "example": "A mind-bending thriller about dreams within dreams."
+                }
+              }
+            }
+          },
+          "totalFavorites": {
+            "type": "integer",
+            "example": 1
+          },
+          "currentPage": {
+            "type": "integer",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "example": 10
+          }
+        }
+      },
+      "DeleteFavoriteResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Favorite deleted successfully"
+          },
+          "data": {
+            "type": "object",
+            "description": "Empty object indicating successful deletion",
+            "example": {}
+          }
+        }
+      },
+      "UpdateFavoriteRequest": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "description"
+        ]
+      },
+      "UpdateFavoriteResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "60c72b2f9b1e8b001c8e4d3a"
+          },
+          "title": {
+            "type": "string",
+            "example": "Inception"
+          },
+          "year": {
+            "type": "string",
+            "example": "2010"
+          },
+          "imdbID": {
+            "type": "string",
+            "example": "tt1375666"
+          },
+          "type": {
+            "type": "string",
+            "example": "movie"
+          },
+          "poster": {
+            "type": "string",
+            "example": "https://example.com/poster.jpg"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-06-14T10:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-06-14T10:00:00Z"
+          },
+          "description": {
+            "type": "string",
+            "example": "A mind-bending thriller about dreams within dreams."
+          }
+        }
+      },
+      "UserNotFound": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "User not found"
+          },
+          "code": {
+            "type": "string",
+            "example": "USER_NOT_FOUND"
+          },
+          "status": {
+            "type": "integer",
+            "example": 404
+          }
+        },
+        "required": [
+          "error",
+          "code",
+          "status"
+        ]
+      },
+      "FavoriteNotFound": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Favorite not found"
+          },
+          "code": {
+            "type": "string",
+            "example": "FAVORITE_NOT_FOUND"
+          },
+          "status": {
+            "type": "integer",
+            "example": 404
+          }
+        },
+        "required": [
+          "error",
+          "code",
+          "status"
+        ]
+      },
+      "FavoriteAlreadyExists": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Favorite already exist for this user"
+          },
+          "code": {
+            "type": "string",
+            "example": "FAVORITE_EXISTS"
+          },
+          "status": {
+            "type": "integer",
+            "example": 409
+          }
+        }
+      }
+    },
+    "parameters": {
+      "OmdbTitleParam": {
+        "name": "title",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Search term for the media title."
+      },
+      "OmdbTypeParam": {
+        "name": "type",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "movie",
+            "series",
+            "game",
+            "all"
+          ]
+        },
+        "description": "Type of media item to search (movie, series, game, or all)."
+      },
+      "OmdbYearParam": {
+        "name": "year",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Year of release (between 1900 and current year)."
+      },
+      "OmdbPageParam": {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "description": "Page number for pagination (default: 1)."
+      },
+      "OmdbIdParam": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "IMDb ID of the media item (e.g., tt1375666)."
+      },
+      "UserIdParam": {
+        "name": "userId",
+        "in": "path",
+        "required": true,
+        "example": "60c72b2f9b1e8b001c8e4d3a",
+        "schema": {
+          "type": "string"
+        },
+        "description": "ID of the user to retrieve favorites for."
+      },
+      "MediaItemIdParams": {
+        "name": "mediaItemId",
+        "in": "path",
+        "required": true,
+        "example": "6847f9acf8a5c5ba5138bf2b",
+        "schema": {
+          "type": "string"
+        },
+        "description": "ID of the media item to add or update in favorites."
+      },
+      "FavoritesPageParam": {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "description": "Page number for pagination of favorites (default: 1)."
+      },
+      "FavoritesPageSizeParam": {
+        "name": "pageSize",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "description": "Number of favorites to return per page (default: 10)."
+      },
+      "FavoritesSortFieldParam": {
+        "name": "sort",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "title",
+            "year"
+          ]
+        },
+        "description": "Field to sort favorites by (default: title)."
+      },
+      "FavoritesSortOrderParam": {
+        "name": "order",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "enum": [
+            1,
+            -1
+          ],
+          "default": 1
+        },
+        "description": "Sort order (1 for ascending, -1 for descending; default: 1)."
+      },
+      "FavoritesMediaTypeParam": {
+        "name": "mediaType",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "movie",
+            "series",
+            "game",
+            "all"
+          ],
+          "default": "all"
+        },
+        "description": "Filter favorites by media type (movie, series, game, or all; default: all)."
+      },
+      "FavoritesSearchTermParam": {
+        "name": "searchTerm",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Search term to filter favorites by title."
+      }
+    }
+  },
   "paths": {
+    "/api/favorites/{userId}": {
+      "post": {
+        "tags": [
+          "Favorites"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "summary": "Create a new favorite",
+        "description": "Create a new favorite for a user.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserIdParam"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFavoriteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Favorite created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateFavoriteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                },
+                "example": {
+                  "error": "Validation failed",
+                  "code": "VALIDATION_ERROR",
+                  "status": 400,
+                  "errors": [
+                    {
+                      "msg": "title is required",
+                      "param": "title",
+                      "location": "body"
+                    },
+                    {
+                      "msg": "imdbID must be a valid string",
+                      "param": "imdbID",
+                      "location": "body"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserNotFound"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Favorite already exists for this user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoriteAlreadyExists"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Get user's favorites",
+        "description": "Retrieve a paginated list of a user's favorites, total count, current page, and page size with optional filtering and sorting.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UserIdParam"
+          },
+          {
+            "$ref": "#/components/parameters/FavoritesPageParam"
+          },
+          {
+            "$ref": "#/components/parameters/FavoritesPageSizeParam"
+          },
+          {
+            "$ref": "#/components/parameters/FavoritesSortFieldParam"
+          },
+          {
+            "$ref": "#/components/parameters/FavoritesSortOrderParam"
+          },
+          {
+            "$ref": "#/components/parameters/FavoritesMediaTypeParam"
+          },
+          {
+            "$ref": "#/components/parameters/FavoritesSearchTermParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favorites retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFavoritesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                },
+                "example": {
+                  "error": "Validation failed",
+                  "code": "VALIDATION_ERROR",
+                  "status": 400,
+                  "errors": [
+                    {
+                      "msg": "userId must be a valid MongoDB ObjectId",
+                      "param": "userId",
+                      "location": "path"
+                    },
+                    {
+                      "msg": "page must be a positive integer",
+                      "param": "page",
+                      "location": "query"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserNotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/favorites/{id}/{userId}": {
+      "delete": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Delete a favorite",
+        "description": "Deletes a favorite item by its ID for a specific user. If the favorite is the last one associated with the media item, the media item is also deleted.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/MediaItemIdParams"
+          },
+          {
+            "$ref": "#/components/parameters/UserIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favorite deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteFavoriteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                },
+                "example": {
+                  "error": "Validation failed",
+                  "code": "VALIDATION_ERROR",
+                  "status": 400,
+                  "errors": [
+                    {
+                      "msg": "id must be a valid MongoDB ObjectId",
+                      "param": "id",
+                      "location": "path"
+                    },
+                    {
+                      "msg": "userId must be a valid MongoDB ObjectId",
+                      "param": "userId",
+                      "location": "path"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Favorite or user not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/FavoriteNotFound"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserNotFound"
+                    }
+                  ]
+                },
+                "examples": {
+                  "FavoriteNotFound": {
+                    "summary": "Favorite not found",
+                    "value": {
+                      "status": 404,
+                      "message": "Favorite not found",
+                      "code": "FAVORITE_NOT_FOUND"
+                    }
+                  },
+                  "UserNotFound": {
+                    "summary": "User not found",
+                    "value": {
+                      "status": 404,
+                      "message": "User not found",
+                      "code": "USER_NOT_FOUND"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Favorites"
+        ],
+        "summary": "Update a favorite",
+        "description": "\nUpdates the description of a favorite item for a specific user.\n- If the favorite has no description, this endpoint will add one.\n- If the request body contains an empty string (\"\"), the existing description will be removed.\n- If the request body contains a new string, it will overwrite the previous description.\nThe description is a user-generated note about the favorite media item.\n",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/MediaItemIdParams"
+          },
+          {
+            "$ref": "#/components/parameters/UserIdParam"
+          }
+        ],
+        "requestBody": {
+          "description": "Description of the favorite item to be updated. Can be an empty string to remove the description.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFavoriteRequest"
+              },
+              "examples": {
+                "addOrUpdate": {
+                  "summary": "Add or update description",
+                  "value": {
+                    "description": "A mind-bending thriller about dreams within dreams."
+                  }
+                },
+                "remove": {
+                  "summary": "Remove description",
+                  "value": {
+                    "description": ""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Favorite updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateFavoriteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                },
+                "example": {
+                  "error": "Validation failed",
+                  "code": "VALIDATION_ERROR",
+                  "status": 400,
+                  "errors": [
+                    {
+                      "msg": "id must be a valid MongoDB ObjectId",
+                      "param": "id",
+                      "location": "path"
+                    },
+                    {
+                      "msg": "userId must be a valid MongoDB ObjectId",
+                      "param": "userId",
+                      "location": "path"
+                    },
+                    {
+                      "msg": "Description must be a string",
+                      "param": "description",
+                      "location": "body"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Favorite or user not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/FavoriteNotFound"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UserNotFound"
+                    }
+                  ]
+                },
+                "examples": {
+                  "FavoriteNotFound": {
+                    "summary": "Favorite not found",
+                    "value": {
+                      "error": "Favorite not found or could not be updated",
+                      "code": "FAVORITE_NOT_FOUND",
+                      "status": 404
+                    }
+                  },
+                  "UserNotFound": {
+                    "summary": "User not found",
+                    "value": {
+                      "error": "User not found",
+                      "code": "USER_NOT_FOUND",
+                      "status": 404
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/omdb": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "Omdb"
+        ],
+        "summary": "Search media items in OMDB",
+        "description": "Retrieve a list of media items (movies, series, games) from the OMDB API.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OmdbTitleParam"
+          },
+          {
+            "$ref": "#/components/parameters/OmdbTypeParam"
+          },
+          {
+            "$ref": "#/components/parameters/OmdbYearParam"
+          },
+          {
+            "$ref": "#/components/parameters/OmdbPageParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of media items found or not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/OmdbItemMediaListResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/OmdbErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "found": {
+                    "summary": "Results found",
+                    "value": {
+                      "Search": [
+                        {
+                          "title": "Inception",
+                          "year": "2010",
+                          "imdbID": "tt1375666",
+                          "type": "movie",
+                          "poster": "https://example.com/poster.jpg"
+                        }
+                      ],
+                      "totalResults": "1",
+                      "Response": "True"
+                    }
+                  },
+                  "notFound": {
+                    "summary": "No results",
+                    "value": {
+                      "Response": "False",
+                      "Error": "Movie not found!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "OMDB request timed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OmdbTimeOutError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/omdb/{id}": {
+      "get": {
+        "tags": [
+          "Omdb"
+        ],
+        "summary": "Get detailed info for a media item",
+        "description": "Retrieve detailed information for a specific media item (movie, series, etc.) from the OMDB API by IMDb ID.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/OmdbIdParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detailed information of the media item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OmdbItemDetailResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/user/login": {
       "post": {
         "tags": [
@@ -33,22 +1427,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "required": [
-                  "email",
-                  "password"
-                ],
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "user@example.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "example": "P@ssw0rd"
-                  }
-                }
+                "$ref": "#/components/schemas/LoginRequest"
               }
             }
           }
@@ -59,38 +1438,40 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "type": "string"
-                    },
-                    "user": {
-                      "type": "object",
-                      "properties": {
-                        "_id": {
-                          "type": "string"
-                        },
-                        "email": {
-                          "type": "string"
-                        },
-                        "name": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/LoginResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Validation error"
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Invalid credentials"
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal server error"
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
           }
         }
       }
@@ -107,27 +1488,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "required": [
-                  "name",
-                  "email",
-                  "password"
-                ],
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "example": "John Doe"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "john@example.com"
-                  },
-                  "password": {
-                    "type": "string",
-                    "example": "P@ssw0rd"
-                  }
-                }
+                "$ref": "#/components/schemas/RegisterRequest"
               }
             }
           }
@@ -138,35 +1499,57 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "_id": {
-                      "type": "string"
-                    },
-                    "email": {
-                      "type": "string"
-                    },
-                    "name": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/RegisterResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Validation error"
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
           },
           "409": {
-            "description": "User already exists"
+            "description": "User already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConflictError"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal server error"
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerError"
+                }
+              }
+            }
           }
         }
       }
     }
   },
-  "components": {},
-  "tags": []
+  "tags": [
+    {
+      "name": "Favorites",
+      "description": "API endpoints for managing user favorites."
+    },
+    {
+      "name": "Omdb",
+      "description": "Operations related to OMDB API for media items (movies, series, games)"
+    },
+    {
+      "name": "User",
+      "description": "User management operations"
+    }
+  ]
 }
