@@ -6,7 +6,7 @@
     "description": "ScreenPulse API documentation.",
     "contact": {
       "name": "Eduardo González",
-      "email": "your@email.com",
+      "email": "eddugonz@gmail.com",
       "url": "https://github.com/EduGese/ScreenPulse-backend-Api"
     }
   },
@@ -16,7 +16,7 @@
       "description": "Local server"
     },
     {
-      "url": "<your live url here>",
+      "url": "https://screenpulse-api.onrender.com",
       "description": "Live server"
     }
   ],
@@ -852,13 +852,13 @@
   "paths": {
     "/api/favorites/{userId}": {
       "post": {
-        "tags": [
-          "Favorites"
-        ],
         "security": [
           {
             "ApiKeyAuth": []
           }
+        ],
+        "tags": [
+          "Favorites"
         ],
         "summary": "Create a new favorite",
         "description": "Create a new favorite for a user.",
@@ -948,6 +948,11 @@
         }
       },
       "get": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "tags": [
           "Favorites"
         ],
@@ -1039,6 +1044,11 @@
     },
     "/api/favorites/{id}/{userId}": {
       "delete": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "tags": [
           "Favorites"
         ],
@@ -1138,6 +1148,11 @@
         }
       },
       "patch": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "tags": [
           "Favorites"
         ],
@@ -1269,11 +1284,6 @@
     },
     "/api/omdb": {
       "get": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
         "tags": [
           "Omdb"
         ],
@@ -1417,6 +1427,11 @@
     },
     "/api/user/login": {
       "post": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "tags": [
           "User"
         ],
@@ -1478,6 +1493,11 @@
     },
     "/api/user/register": {
       "post": {
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
         "tags": [
           "User"
         ],
