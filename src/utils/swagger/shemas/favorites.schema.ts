@@ -5,31 +5,26 @@ export const favoritesSchema = {
             title: {
                 type: 'string',
                 description: 'Title of the media item to be added to favorites',
-                required: true,
                 example: 'Inception',
             },
             year: {
                 type: 'string',
                 description: 'Year of release of the media item',
-                required: true,
                 example: '2010',
             },
             imdbID: {
                 type: 'string',
                 description: 'IMDb ID of the media item',
-                required: true,
                 example: 'tt1375666',
             },
             type: {
                 type: 'string',
                 description: 'Type of the media item (e.g., movie, series)',
-                required: true,
                 example: 'movie',
             },
             poster: {
                 type: 'string',
                 description: 'URL of the poster image for the media item',
-                required: true,
                 example: 'https://example.com/poster.jpg',
             },
         },

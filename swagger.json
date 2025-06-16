@@ -20,6 +20,11 @@
       "description": "Live server"
     }
   ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
   "components": {
     "securitySchemes": {
       "ApiKeyAuth": {
@@ -29,11 +34,6 @@
         "description": "API key for writing operations on ScreenPulse API. You can obtain it contacting the administrator. Key will be validated when performing requests to endpoints that modify data. For read-only operations, the API key is not required."
       }
     },
-    "security": [
-      {
-        "ApiKeyAuth": []
-      }
-    ],
     "schemas": {
       "LoginRequest": {
         "type": "object",
@@ -440,31 +440,26 @@
           "title": {
             "type": "string",
             "description": "Title of the media item to be added to favorites",
-            "required": true,
             "example": "Inception"
           },
           "year": {
             "type": "string",
             "description": "Year of release of the media item",
-            "required": true,
             "example": "2010"
           },
           "imdbID": {
             "type": "string",
             "description": "IMDb ID of the media item",
-            "required": true,
             "example": "tt1375666"
           },
           "type": {
             "type": "string",
             "description": "Type of the media item (e.g., movie, series)",
-            "required": true,
             "example": "movie"
           },
           "poster": {
             "type": "string",
             "description": "URL of the poster image for the media item",
-            "required": true,
             "example": "https://example.com/poster.jpg"
           }
         },
@@ -1284,6 +1279,7 @@
     },
     "/api/omdb": {
       "get": {
+        "security": [],
         "tags": [
           "Omdb"
         ],
@@ -1381,6 +1377,7 @@
     },
     "/api/omdb/{id}": {
       "get": {
+        "security": [],
         "tags": [
           "Omdb"
         ],

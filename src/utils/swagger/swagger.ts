@@ -32,6 +32,11 @@ export const options = {
         description: "Live server"
       },
     ],
+     security: [
+        {
+          ApiKeyAuth: []
+        }
+      ],
     components: {
       securitySchemes: {
         ApiKeyAuth: {
@@ -41,11 +46,6 @@ export const options = {
           description: 'API key for writing operations on ScreenPulse API. You can obtain it contacting the administrator. Key will be validated when performing requests to endpoints that modify data. For read-only operations, the API key is not required.'
         }
       },
-      security: [
-        {
-          ApiKeyAuth: []
-        }
-      ],
       schemas: {
         ...userSchemas,
         ...globalSchemas,

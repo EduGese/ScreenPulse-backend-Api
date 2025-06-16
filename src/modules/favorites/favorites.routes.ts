@@ -3,6 +3,7 @@ import express from 'express';
 import favoritesController from './favorites.controller';
 import { createFavoriteValidator, deleteFavoriteValidator, getFavoritesValidator, updateFavoriteValidator } from '../../validators/favoritesValidator';
 import { validate } from '../../middlewares/validate';
+import { swaggerAuth } from '../../middlewares/swaggerAuth';
 
 const _router = express.Router();
 /**
@@ -73,7 +74,7 @@ const _router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.post('/:userId', createFavoriteValidator, validate, favoritesController.createFavorite);
+_router.post('/:userId', swaggerAuth, createFavoriteValidator, validate, favoritesController.createFavorite);
 
 /**
  * @swagger
@@ -130,7 +131,7 @@ _router.post('/:userId', createFavoriteValidator, validate, favoritesController.
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.get('/:userId', getFavoritesValidator, validate, favoritesController.getFavorites);
+_router.get('/:userId', swaggerAuth, getFavoritesValidator, validate, favoritesController.getFavorites);
 
 /**
  * @swagger
@@ -197,7 +198,7 @@ _router.get('/:userId', getFavoritesValidator, validate, favoritesController.get
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.delete('/:id/:userId', deleteFavoriteValidator, validate, favoritesController.deleteFavorite);
+_router.delete('/:id/:userId', swaggerAuth, deleteFavoriteValidator, validate, favoritesController.deleteFavorite);
 
 /**
  * @swagger
@@ -289,7 +290,7 @@ _router.delete('/:id/:userId', deleteFavoriteValidator, validate, favoritesContr
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.patch('/:id/:userId', updateFavoriteValidator, validate,favoritesController.updateFavorite);
+_router.patch('/:id/:userId', swaggerAuth, updateFavoriteValidator, validate,favoritesController.updateFavorite);
 
 
 export const router = _router;

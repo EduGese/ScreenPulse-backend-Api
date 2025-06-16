@@ -14,7 +14,7 @@ window.onload = function() {
       SwaggerUIBundle.plugins.DownloadUrl
     ],
     layout: "StandaloneLayout",
-    supportedSubmitMethods: []
+    supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch']
   });
 
   //</editor-fold>

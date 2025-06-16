@@ -18,6 +18,7 @@ const _router = express.Router();
  * @swagger
  * /api/omdb:
  *   get:
+ *     security: []
  *     tags:
  *       - Omdb
  *     summary: Search media items in OMDB
@@ -72,12 +73,13 @@ const _router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.get('/', swaggerAuth, fetchingOmdbMoviesValidator, validate, omdbController.getOmdbItemMediaList);
+_router.get('/', fetchingOmdbMoviesValidator, validate, omdbController.getOmdbItemMediaList);
 
 /**
  * @swagger
  * /api/omdb/{id}:
  *   get:
+ *     security: []
  *     tags:
  *       - Omdb
  *     summary: Get detailed info for a media item

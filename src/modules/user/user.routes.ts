@@ -3,6 +3,7 @@ import express from "express";
 import userController from "./user.controller";
 import { loginValidator, registerValidator } from "../../validators/userValidators";
 import { validate } from "../../middlewares/validate";
+import { swaggerAuth } from "../../middlewares/swaggerAuth";
 
 const _router = express.Router();
 /**
@@ -54,7 +55,7 @@ const _router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.post("/login", loginValidator, validate, userController.loginUser);
+_router.post("/login",swaggerAuth, loginValidator, validate, userController.loginUser);
 
 /**
  * @swagger
@@ -99,6 +100,6 @@ _router.post("/login", loginValidator, validate, userController.loginUser);
  *               $ref: '#/components/schemas/InternalServerError'
  */
 
-_router.post("/register", registerValidator, validate, userController.registertUser);
+_router.post("/register", swaggerAuth, registerValidator, validate, userController.registertUser);
 
 export const router = _router;
