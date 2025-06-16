@@ -18,7 +18,7 @@ var corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
   optionsSuccessStatus: 204,
   maxAge: 500,
-  origin: config.client.url,
+  origin: [config.client.url, config.github.url]
 }
 app.use(cors(corsOptions));
 app.use(express.json());
