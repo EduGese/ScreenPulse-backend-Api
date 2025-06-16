@@ -1,12 +1,12 @@
 import cors from 'cors';
 import config from '../config/config';
 
-const allowedOrigins = [config.client.url, config.github.url];
-console.log('CORS Middleware initialized with allowed origins:', allowedOrigins);
-
+const allowedOrigins = [config.client.url, 'https://edugese.github.io'];
+    console.log('CORS Middleware initialized with allowed origins:', allowedOrigins);
 const corsOptions = {
     
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+
     console.log('Incoming origin:', origin);
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
