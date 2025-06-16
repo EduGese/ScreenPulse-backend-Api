@@ -8,6 +8,7 @@ const express_1 = __importDefault(require("express"));
 const favorites_controller_1 = __importDefault(require("./favorites.controller"));
 const favoritesValidator_1 = require("../../validators/favoritesValidator");
 const validate_1 = require("../../middlewares/validate");
+const swaggerAuth_1 = require("../../middlewares/swaggerAuth");
 const _router = express_1.default.Router();
 /**
  * @swagger
@@ -22,8 +23,6 @@ const _router = express_1.default.Router();
  *     security:
  *       - ApiKeyAuth: []
  *     tags: [Favorites]
- *     security:
- *       - ApiKeyAuth: []
  *     summary: Create a new favorite
  *     description: Create a new favorite for a user.
  *     parameters:
@@ -77,7 +76,7 @@ const _router = express_1.default.Router();
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.post('/:userId', favoritesValidator_1.createFavoriteValidator, validate_1.validate, favorites_controller_1.default.createFavorite);
+_router.post('/:userId', swaggerAuth_1.swaggerAuth, favoritesValidator_1.createFavoriteValidator, validate_1.validate, favorites_controller_1.default.createFavorite);
 /**
  * @swagger
  * /api/favorites/{userId}:
@@ -133,7 +132,7 @@ _router.post('/:userId', favoritesValidator_1.createFavoriteValidator, validate_
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.get('/:userId', favoritesValidator_1.getFavoritesValidator, validate_1.validate, favorites_controller_1.default.getFavorites);
+_router.get('/:userId', swaggerAuth_1.swaggerAuth, favoritesValidator_1.getFavoritesValidator, validate_1.validate, favorites_controller_1.default.getFavorites);
 /**
  * @swagger
  * /api/favorites/{id}/{userId}:
@@ -199,7 +198,7 @@ _router.get('/:userId', favoritesValidator_1.getFavoritesValidator, validate_1.v
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.delete('/:id/:userId', favoritesValidator_1.deleteFavoriteValidator, validate_1.validate, favorites_controller_1.default.deleteFavorite);
+_router.delete('/:id/:userId', swaggerAuth_1.swaggerAuth, favoritesValidator_1.deleteFavoriteValidator, validate_1.validate, favorites_controller_1.default.deleteFavorite);
 /**
  * @swagger
  * /api/favorites/{id}/{userId}:
@@ -290,5 +289,5 @@ _router.delete('/:id/:userId', favoritesValidator_1.deleteFavoriteValidator, val
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.patch('/:id/:userId', favoritesValidator_1.updateFavoriteValidator, validate_1.validate, favorites_controller_1.default.updateFavorite);
+_router.patch('/:id/:userId', swaggerAuth_1.swaggerAuth, favoritesValidator_1.updateFavoriteValidator, validate_1.validate, favorites_controller_1.default.updateFavorite);
 exports.router = _router;

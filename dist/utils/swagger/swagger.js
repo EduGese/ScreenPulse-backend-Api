@@ -35,6 +35,11 @@ exports.options = {
                 description: "Live server"
             },
         ],
+        security: [
+            {
+                ApiKeyAuth: []
+            }
+        ],
         components: {
             securitySchemes: {
                 ApiKeyAuth: {
@@ -44,11 +49,6 @@ exports.options = {
                     description: 'API key for writing operations on ScreenPulse API. You can obtain it contacting the administrator. Key will be validated when performing requests to endpoints that modify data. For read-only operations, the API key is not required.'
                 }
             },
-            security: [
-                {
-                    ApiKeyAuth: []
-                }
-            ],
             schemas: Object.assign(Object.assign(Object.assign(Object.assign({}, user_schemas_1.userSchemas), global_schemas_1.globalSchemas), omdb_schemas_1.omdbSchemas), favorites_schema_1.favoritesSchema),
             parameters: Object.assign(Object.assign({}, omdb_parameters_1.omdbParameters), favorites_parameters_1.favoritesParameters)
         }

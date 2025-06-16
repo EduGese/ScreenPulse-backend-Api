@@ -8,6 +8,7 @@ const express_1 = __importDefault(require("express"));
 const user_controller_1 = __importDefault(require("./user.controller"));
 const userValidators_1 = require("../../validators/userValidators");
 const validate_1 = require("../../middlewares/validate");
+const swaggerAuth_1 = require("../../middlewares/swaggerAuth");
 const _router = express_1.default.Router();
 /**
  * @swagger
@@ -57,7 +58,7 @@ const _router = express_1.default.Router();
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.post("/login", userValidators_1.loginValidator, validate_1.validate, user_controller_1.default.loginUser);
+_router.post("/login", swaggerAuth_1.swaggerAuth, userValidators_1.loginValidator, validate_1.validate, user_controller_1.default.loginUser);
 /**
  * @swagger
  * /api/user/register:
@@ -100,5 +101,5 @@ _router.post("/login", userValidators_1.loginValidator, validate_1.validate, use
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.post("/register", userValidators_1.registerValidator, validate_1.validate, user_controller_1.default.registertUser);
+_router.post("/register", swaggerAuth_1.swaggerAuth, userValidators_1.registerValidator, validate_1.validate, user_controller_1.default.registertUser);
 exports.router = _router;
