@@ -20,7 +20,8 @@ app.use((req, res, next) => {
 });
 
 //CORS Middleware
-app.use(corsMiddleware);
+//app.use(corsMiddleware);
+app.use(cors());
 
 /// Middleware to parse JSON bodies
 app.use(express.json());
