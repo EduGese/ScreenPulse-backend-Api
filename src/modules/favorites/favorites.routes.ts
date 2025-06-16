@@ -20,8 +20,6 @@ const _router = express.Router();
  *     security:
  *       - ApiKeyAuth: []
  *     tags: [Favorites]
- *     security:
- *       - ApiKeyAuth: []
  *     summary: Create a new favorite
  *     description: Create a new favorite for a user.
  *     parameters:

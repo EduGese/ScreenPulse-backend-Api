@@ -17,6 +17,7 @@ const _router = express.Router();
 /**
  * @swagger
  * /api/omdb:
+ *   get:
  *     tags:
  *       - Omdb
  *     summary: Search media items in OMDB
