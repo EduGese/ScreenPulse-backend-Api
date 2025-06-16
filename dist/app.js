@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const cors_1 = __importDefault(require("cors"));
 const config_1 = __importDefault(require("./config/config"));
 const modules_1 = require("./modules");
 const errorHandler_1 = require("./middlewares/errorHandler");
 const swagger_1 = __importDefault(require("./utils/swagger/swagger"));
-const cors_1 = __importDefault(require("./middlewares/cors"));
 //execute express
 const app = (0, express_1.default)();
 const port = config_1.default.server.port;
@@ -19,7 +19,8 @@ app.use((req, res, next) => {
     next();
 });
 //CORS Middleware
-app.use(cors_1.default);
+//app.use(corsMiddleware);
+app.use((0, cors_1.default)());
 /// Middleware to parse JSON bodies
 app.use(express_1.default.json());
 //routes

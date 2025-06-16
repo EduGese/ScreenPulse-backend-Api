@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 const config_1 = __importDefault(require("../config/config"));
-const allowedOrigins = [config_1.default.client.url, config_1.default.github.url];
+const allowedOrigins = [config_1.default.client.url, 'https://edugese.github.io'];
 console.log('CORS Middleware initialized with allowed origins:', allowedOrigins);
 const corsOptions = {
     origin: (origin, callback) => {
