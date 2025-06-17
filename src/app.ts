@@ -12,6 +12,9 @@ import corsMiddleware from './middlewares/cors';
 //execute express
 const app = express();
 const port = config.server.port;
+  console.log('Environment', process.env.NODE_ENV);
+  console.log('config client', config.client.url);
+  console.log('config github', config.github.url);
 
 // Middleware to log the origin header for debugging purposes
 app.use((req, res, next) => {
@@ -20,8 +23,8 @@ app.use((req, res, next) => {
 });
 
 //CORS Middleware
-//app.use(corsMiddleware);
-app.use(cors());
+app.use(corsMiddleware);
+//app.use(cors());
 
 /// Middleware to parse JSON bodies
 app.use(express.json());
@@ -42,7 +45,7 @@ app.use(errorHandler);
 // server listenening on config.server.port
 app.listen(port, () => {
   console.log('Server is running on port', port);
-  console.log('CORS enabled for:', config.github.url);
+  // console.log('CORS enabled for:', config.github.url);
 });
 
 
