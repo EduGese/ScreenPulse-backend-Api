@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
-const EXEMPT_ORIGIN = 'http://localhost:4200';
+const EXEMPT_ORIGIN = 'https://sreenpulse.web.app';
 /*
   * Middleware to authenticate requests to Swagger UI in production.
   * It checks for an API key in the request headers and compares it with the one stored in environment variables.

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 const config_1 = __importDefault(require("../config/config"));
 const allowedOrigins = [config_1.default.client.url, 'https://edugese.github.io'];
-//console.log('CORS Middleware initialized with allowed origins:', allowedOrigins);
+console.log('CORS Middleware initialized with allowed origins:', allowedOrigins);
 const corsOptions = {
     origin: (origin, callback) => {
         console.log('Incoming origin:', origin);
