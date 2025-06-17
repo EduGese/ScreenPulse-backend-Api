@@ -1,7 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.swaggerAuth = void 0;
-const EXEMPT_ORIGIN = 'https://sreenpulse.web.app';
+const config_1 = __importDefault(require("../config/config"));
+const EXEMPT_ORIGIN = config_1.default.client.url || 'http://localhost:4200';
 /*
   * Middleware to authenticate requests to Swagger UI in production.
   * It checks for an API key in the request headers and compares it with the one stored in environment variables.
@@ -10,7 +14,7 @@ const EXEMPT_ORIGIN = 'https://sreenpulse.web.app';
 const swaggerAuth = (req, res, next) => {
     const origin = req.headers.origin;
     if (origin === EXEMPT_ORIGIN) {
-        //console.log('Swagger Auth Middleware: Exempting origin', origin);
+        console.log('Swagger Auth Middleware: Exempting origin', origin);
         return next();
     }
     if (req.method !== 'GET') {

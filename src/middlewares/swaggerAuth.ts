@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
+import config from '../config/config';
 
-const EXEMPT_ORIGIN = 'https://sreenpulse.web.app';
+const EXEMPT_ORIGIN = config.client.url || 'http://localhost:4200'; 
 /*
   * Middleware to authenticate requests to Swagger UI in production.
   * It checks for an API key in the request headers and compares it with the one stored in environment variables.
@@ -9,7 +10,7 @@ const EXEMPT_ORIGIN = 'https://sreenpulse.web.app';
 export const swaggerAuth = (req: Request, res: Response, next: NextFunction) => {
    const origin = req.headers.origin;
   if( origin === EXEMPT_ORIGIN) {
-      //console.log('Swagger Auth Middleware: Exempting origin', origin);
+      console.log('Swagger Auth Middleware: Exempting origin', origin);
       return next();
     }
   if (req.method !== 'GET') {
