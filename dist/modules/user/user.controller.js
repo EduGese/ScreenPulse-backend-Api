@@ -14,34 +14,42 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_service_1 = __importDefault(require("./user.service"));
 class UserController {
+    /**
+   * Controller for authenticating a user.
+   * @param {Request} req - HTTP request containing email and password in the body.
+   * @param {Response} res - HTTP response object.
+   * @param {NextFunction} next - Express callback to pass control to the error handler.
+   * @returns {Promise<void>}
+   * @throws {ApiError} If the credentials are invalid or authentication fails.
+   */
     loginUser(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const { email, password } = req.body;
             try {
                 const response = yield user_service_1.default.loginUser(email, password);
-                res.json(response);
+                res.status(200).json(response);
             }
             catch (error) {
-                res.status(401).json({
-                    error: "Authentication failed",
-                    message: error.message
-                });
-                //next(error);
+                next(error);
             }
         });
     }
+    /**
+   * Controller for registering a new user.
+   * @param {Request} req - HTTP request containing the user data in the body.
+   * @param {Response} res - HTTP response object.
+   * @param {NextFunction} next - Express callback to pass control to the error handler.
+   * @returns {Promise<void>}
+   * @throws {ApiError} If the user already exists or registration fails.
+   */
     registertUser(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const response = yield user_service_1.default.registerUser(req.body);
-                res.json(response);
+                res.status(201).json(response);
             }
             catch (error) {
-                res.status(409).json({
-                    error: "Data conflict",
-                    message: error.message
-                });
-                // next(error);
+                next(error);
             }
         });
     }

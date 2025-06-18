@@ -14,39 +14,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const omdb_service_1 = __importDefault(require("./omdb.service"));
 class OmdbController {
-    /**
-     * @summary Find documents from a collection
-     * @description Get documents
-     * @param {express.Request} req is the request of the operation
-     * @param {express.Response} res is the response of the operation
-     * @param {express.Next} next is the middleware to continue with code execution
-     * @returns {Array} with all documents matching the conditions
-     */
-    getOmdbMovies(req, res, next) {
+    getOmdbItemMediaList(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                if (!req.body || typeof req.body !== 'object' || Object.keys(req.body).length === 0) { //Check that body is undefined or null, is an object type and not empty
-                    const error = new Error('A non-empty JSON body is mandatory.');
-                    return next(error);
-                }
-                const omdbResponse = yield omdb_service_1.default.getOmdbMovies(req.body);
+                const title = req.query.title || "";
+                const type = req.query.type || "";
+                const year = req.query.year || "";
+                const page = req.query.page || "1";
+                const omdbResponse = yield omdb_service_1.default.getOmdbItemMediaList(title, type, year, page);
                 res.status(200).json(omdbResponse);
             }
             catch (error) {
                 next(error);
-                return;
             }
         });
     }
-    getMovieInfo(req, res, next) {
+    getOmdbItemMediaInfo(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const omdbResponse = yield omdb_service_1.default.getMovieInfo(req.params.id);
+                const omdbResponse = yield omdb_service_1.default.getOmdbItemMediaInfo(req.params.id);
                 res.status(200).json(omdbResponse);
             }
             catch (error) {
                 next(error);
-                return;
             }
         });
     }

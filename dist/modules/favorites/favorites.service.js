@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -16,104 +27,145 @@ const mongoose_1 = require("mongoose");
 const favorites_1 = __importDefault(require("../../models/favorites"));
 const user_1 = __importDefault(require("../../models/user"));
 const description_1 = __importDefault(require("../../models/description"));
-//import { is } from 'typescript-is';
+const apiError_1 = require("../../errors/apiError");
 class FavoritesService {
-    createFavorite(userId, movie) {
+    /**
+   * Adds a new favorite mediaItem to a user's list of favorites.
+   * If the mediaItem is not already in the favorites collection, it is created.
+   * If the mediaItem exists but is not yet a favorite for this user, it is added to the user's favorites.
+   * @param {string} userId - The ID of the user.
+   * @param {MediaItem} mediaItem - The mediaItem object to be added as a favorite.
+   * @returns {Promise<FavoriteResponse>} The created or updated favorite mediaItem object.
+   * @throws {ApiError} If the user does not exist (404) or the favorite already exists for this user (409).
+   */
+    createFavorite(userId, mediaItem) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (typeof userId !== 'string')
-                throw new Error("Invalid input type");
-            //if(!is<Favorites>(movie)) throw new Error("Invalid input type");INVESTIGAR-->https://github.com/samchon/typia?tab=readme-ov-file
-            const user = yield user_1.default.findById(userId); //Comprobacion si existe el usuario
+            const user = yield user_1.default.findById(userId);
             if (!user) {
-                throw new Error("User not found");
+                throw new apiError_1.ApiError(404, "User not found", "USER_NOT_FOUND");
             }
             let favorite;
-            // Verificar si el favorito ya existe en la colección
             const existingFavorite = yield favorites_1.default.findOne({
-                imdbID: movie.imdbID,
+                imdbID: mediaItem.imdbID,
             });
-            const userIdObjectId = new mongoose_1.Types.ObjectId(userId); //Conversion a type ObjectId
+            const userIdObjectId = new mongoose_1.Types.ObjectId(userId);
             if (!existingFavorite) {
-                // Si el favorito no existe, lo creamos y lo añadimos a la lista de favoritos del usuario
-                movie.user = [userIdObjectId]; //Se añade el id del usuario al array de user que todavia no existe en este objeto
-                favorite = yield favorites_1.default.create(movie);
+                const newFavoriteData = Object.assign(Object.assign({}, mediaItem), { user: [userIdObjectId], descriptions: [] });
+                favorite = yield favorites_1.default.create(newFavoriteData);
                 user.favorites.push(favorite._id);
             }
             else {
-                // Si el favorito ya existe, verificamos si está en la lista de favoritos del usuario
                 if (user.favorites.includes(existingFavorite._id)) {
-                    throw new Error("Favorite already exists for this user");
+                    throw new apiError_1.ApiError(409, "Favorite already exist for this user", "FAVORITE_EXISTS");
                 }
-                // Si no está en la lista de favoritos del usuario, lo añadimos
                 user.favorites.push(existingFavorite._id);
                 favorite = existingFavorite;
-                existingFavorite.user.push(userIdObjectId); //Actualiza el array de referencias de favorites con el id del usuario
+                existingFavorite.user.push(userIdObjectId);
                 yield existingFavorite.save();
             }
             yield user.save();
-            return favorite;
+            const favoriteResponse = {
+                _id: favorite._id,
+                title: favorite.title,
+                year: favorite.year,
+                imdbID: favorite.imdbID,
+                type: favorite.type,
+                poster: favorite.poster
+            };
+            return favoriteResponse;
+            // return {
+            //   _id: favorite._id,
+            //   title: favorite.title,
+            //   year: favorite.year,
+            //   imdbID: favorite.imdbID,
+            //   type: favorite.type,
+            //   poster: favorite.poster
+            // }
         });
     }
-    getFavorites(userId) {
+    /**
+    * Retrieves a paginated list of favorites for a user, with optional filtering and sorting.
+    * @param {string} userId - The ID of the user whose favorites are to be retrieved.
+    * @param {number} page - The page number for pagination.
+    * @param {number} pageSize - The number of items per page.
+    * @param {string} sortField - The field by which to sort the favorites ('title' or 'year').
+    * @param {number} sortOrder - The order of sorting (1 for ascending, -1 for descending).
+    * @param {string} [mediaType] - Optional filter for media type (e.g., 'movie', 'series').
+    * @param {string} [searchTerm] - Optional search term to filter favorites by title.
+    * @returns {Promise<FavoritesListWithMetadata>} A promise that resolves to an object containing the list of favorites, total count, current page, and page size.
+    * @throws {ApiError} If the user is not found (404) or if there is an error retrieving the favorites.
+    *
+    */
+    getFavorites(userId, page, pageSize, sortField, sortOrder, mediaType, searchTerm) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (typeof userId !== 'string')
-                throw new Error("Invalid input type");
             const user = yield user_1.default.findById(userId);
             if (!user) {
-                throw new Error("User not found");
+                throw new apiError_1.ApiError(404, "User not found", "USER_NOT_FOUND");
             }
-            const favorites = yield favorites_1.default.find({ user: userId });
-            if (!favorites || favorites.length === 0) {
-                throw new Error("Not favorites saved");
-            }
-            // Para cada favorito, encontrar su descripción asociada y agregarla al objeto favorito
-            for (const favorite of favorites) {
-                const description = yield description_1.default.findOne({ userId, favoriteId: favorite._id });
-                if (description) {
-                    favorite.description = description.description;
+            const sorting = { [sortField]: sortOrder };
+            const filter = Object.assign(Object.assign({ user: userId }, (mediaType && { type: mediaType })), (searchTerm && {
+                title: {
+                    $regex: `^${searchTerm}`,
+                    $options: 'i'
                 }
-                else {
-                    favorite.description = ''; // Opcional: si no hay descripción, establecerla como cadena vacía
-                }
-            }
-            return favorites;
+            }));
+            const favoritesWithoutDescriptions = yield favorites_1.default.find(filter)
+                .sort(sorting)
+                .limit(pageSize * 1)
+                .skip((page - 1) * pageSize)
+                .exec();
+            const count = yield favorites_1.default.countDocuments(filter);
+            const favorites = yield this.addUserDescriptionsToFavorites(userId, favoritesWithoutDescriptions);
+            return {
+                favorites,
+                totalFavorites: count,
+                currentPage: page,
+                pageSize: pageSize,
+            };
         });
     }
+    /**
+    * Deletes a favorite mediaItem from a user's favorites list.
+    * If the favorite is the last one associated with the mediaItem, the mediaItem is also deleted.
+    * @param {string} movieId - The ID of the favorite mediaItem to be deleted.
+    * @param {string} userId - The ID of the user from whose favorites the mediaItem is to be removed.
+    * @returns {Promise<void>} A promise that resolves when the favorite is successfully deleted.
+    * @throws {ApiError} If the favorite is not found (400), the user is not found (404), or if there is an error during deletion.
+    * */
     deleteFavorite(movieId, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (typeof movieId !== 'string' || typeof userId !== 'string')
-                throw new Error("Invalid input type");
-            const user = yield user_1.default.findById(userId);
-            if (!user) {
-                throw new Error("User not found");
-            }
-            /*Eliminar movie del array de favorites del usuario y actualizar*/
-            const favoritesArray = user.favorites.filter(favorite => favorite.toString() !== movieId);
-            user.favorites = favoritesArray;
-            yield user.save();
             const favorite = yield favorites_1.default.findById(movieId);
-            if (!favorite) {
-                throw new Error("Server error.Favorite not found");
-            }
-            /*Eliminar el id del usuario del array de id's de la movie y actualizar */
-            const usersArray = favorite.user.filter((user) => user.toString() !== userId);
-            favorite.user = usersArray;
+            if (!favorite)
+                throw new apiError_1.ApiError(404, "Favorite not found", "FAVORITE_NOT_FOUND");
+            const user = yield user_1.default.findById(userId);
+            if (!user)
+                throw new apiError_1.ApiError(404, "User not found", "USER_NOT_FOUND");
+            user.favorites = user.favorites.filter(fav => fav.toString() !== movieId);
+            yield user.save();
+            favorite.user = favorite.user.filter((u) => u.toString() !== userId);
             yield favorite.save();
-            /* Eliminar el favorito de la coleccion favorites, si no es favorito de ningun usuario mas*/
-            const favoriteUsers = favorite.user.length;
-            if (favoriteUsers === 0) {
+            yield description_1.default.deleteOne({
+                userId: userId,
+                favoriteId: movieId
+            });
+            if (favorite.user.length === 0) {
                 yield favorites_1.default.findByIdAndDelete(movieId);
             }
         });
     }
+    /**
+     * Updates the description of a favorite mediaItem for a specific user.
+     * If the description does not exist, it creates a new one.
+     * @param {string} movieId - The ID of the favorite mediaItem to be updated.
+     * @param {string} userId - The ID of the user for whom the favorite mediaItem description is being updated.
+     * @param {string} description - The new description to be set for the favorite mediaItem.
+     * @returns {Promise<MediaItemDocument>} A promise that resolves to the updated favorite mediaItem object with the new description.
+     */
     updateFavorite(movieId, userId, description) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('description', description);
-            if (typeof movieId !== 'string' || typeof userId !== 'string' || typeof description !== 'string')
-                throw new Error("Invalid input type");
-            if (description.length > 200)
-                throw new Error("Description is too long");
-            // Buscar o crear la descripción para el usuario y la película específicos
+            const user = yield user_1.default.findById(userId);
+            if (!user)
+                throw new apiError_1.ApiError(404, "User not found", "USER_NOT_FOUND");
             let existingDescription = yield description_1.default.findOne({ userId, favoriteId: movieId });
             if (!existingDescription) {
                 existingDescription = yield description_1.default.create({
@@ -123,22 +175,36 @@ class FavoritesService {
                 });
             }
             else {
-                // Si la descripción ya existe, actualizar su valor
                 existingDescription.description = description;
                 yield existingDescription.save();
             }
-            // Agregar la referencia de la descripción al array 'descriptions' en el documento de la película favorita
-            const updatedResult = yield favorites_1.default.findByIdAndUpdate(movieId, { $addToSet: { descriptions: existingDescription._id } });
-            if (!updatedResult) {
-                throw new Error("Failed to update favorite");
+            const updatedFavorite = yield favorites_1.default.findByIdAndUpdate(movieId, { $addToSet: { descriptions: existingDescription._id } }, { new: true, projection: { descriptions: 0, user: 0, __v: 0 } }).lean();
+            if (!updatedFavorite) {
+                throw new apiError_1.ApiError(404, "Favorite not found or could not be updated", "FAVORITE_NOT_FOUND");
             }
-            return updatedResult;
+            const result = Object.assign(Object.assign({}, updatedFavorite), { description: existingDescription.description });
+            return result;
         });
     }
-    getDescriptions(userId, favoriteId) {
+    /**
+     * Adds user-specific descriptions to each favorite media item.
+     * This method retrieves the description for each favorite media item based on the user ID and appends it to the favorite item.
+     * @param {string} userId - The ID of the user whose descriptions are to be added.
+     * @param {MediaItemDocument[]} favorites - An array of favorite media items to which user descriptions will be added.
+     * @return {Promise<MediaItemDocument[]>} A promise that resolves to an array of favorite media items with user descriptions added.
+     */
+    addUserDescriptionsToFavorites(userId, favorites) {
         return __awaiter(this, void 0, void 0, function* () {
-            const descriptions = yield description_1.default.find({ userId, favoriteId });
-            return descriptions; // Devolver las descripciones encontradas o una lista vacía si no hay ninguna.
+            return Promise.all(favorites.map((favorite) => __awaiter(this, void 0, void 0, function* () {
+                const descriptionDoc = yield description_1.default.findOne({
+                    userId,
+                    favoriteId: favorite._id
+                });
+                const _a = favorite.toObject ?
+                    favorite.toObject() :
+                    favorite, { descriptions, user } = _a, cleanFavorite = __rest(_a, ["descriptions", "user"]);
+                return Object.assign(Object.assign({}, cleanFavorite), { description: (descriptionDoc === null || descriptionDoc === void 0 ? void 0 : descriptionDoc.description) || '' });
+            })));
         });
     }
 }

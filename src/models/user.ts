@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import { User } from "../interfaces/user.interface";
 
 const UserSchema: Schema = new mongoose.Schema({
-  userName: {
+  name: {
     type: String,
     required: true,
   },
@@ -23,7 +23,7 @@ const UserSchema: Schema = new mongoose.Schema({
   favorites: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Favorites",
+      ref: "MediaItem",
     },
   ],
 });

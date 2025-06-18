@@ -13,51 +13,44 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
+const apiError_1 = require("../../errors/apiError");
 class OmdbService {
-    getOmdbMovies(query) {
-        var _a;
+    getOmdbItemMediaList(title, type, year, page) {
         return __awaiter(this, void 0, void 0, function* () {
+            type = type === "all" ? '' : type;
+            page = page ? page : "1";
             try {
-                let totalResults = [];
-                let maxPAges = 10;
-                let response = yield axios_1.default.get(process.env.OMDB_URL || "", {
+                const response = yield axios_1.default.get(process.env.OMDB_URL || "", {
                     params: {
                         apikey: process.env.OMDB_APIKEY,
-                        s: query.s,
-                        type: query.type,
-                        y: query.y,
+                        s: title.toLocaleLowerCase(),
+                        type: type.toLocaleLowerCase(),
+                        y: year,
+                        page: page,
                     },
                 });
-                let totalResultsLength = Number(response.data.totalResults);
-                let totalPagesNeeded = Math.ceil(totalResultsLength / 5);
-                for (let index = 0; index < totalPagesNeeded; index++) {
-                    if (index >= maxPAges) {
-                        break;
-                    }
-                    let responseByPage = yield axios_1.default.get(process.env.OMDB_URL || "", {
-                        params: {
-                            apikey: process.env.OMDB_APIKEY,
-                            s: query.s,
-                            type: query.type,
-                            y: query.y,
-                            page: index + 1,
-                        },
+                if (response.data.Response === 'True') {
+                    response.data.Search = response.data.Search.map((item) => {
+                        const newItem = {};
+                        for (const key in item) {
+                            if (['Title', 'Year', 'Type', 'Poster'].includes(key)) {
+                                newItem[key.toLowerCase()] = item[key];
+                            }
+                            else {
+                                newItem[key] = item[key];
+                            }
+                        }
+                        return newItem;
                     });
-                    (_a = responseByPage.data.Search) === null || _a === void 0 ? void 0 : _a.forEach((element) => {
-                        totalResults.push(element);
-                    });
-                    if (index >= maxPAges) {
-                        break;
-                    }
                 }
-                return totalResults;
+                return response.data;
             }
             catch (error) {
-                throw new Error("Error while searching");
+                this.handleAxiosError(error);
             }
         });
     }
-    getMovieInfo(id) {
+    getOmdbItemMediaInfo(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const response = yield axios_1.default.get(process.env.OMDB_URL || "", {
@@ -69,9 +62,17 @@ class OmdbService {
                 return response.data;
             }
             catch (error) {
-                throw new Error("Error while searching");
+                this.handleAxiosError(error);
             }
         });
+    }
+    handleAxiosError(error) {
+        if (axios_1.default.isAxiosError(error)) {
+            if (error.code === "ECONNABORTED") {
+                throw new apiError_1.ApiError(504, "OMDB request timed out", "TIMEOUT");
+            }
+        }
+        throw new apiError_1.ApiError(500, "Internal server error", "INTERNAL_ERROR");
     }
 }
 exports.default = new OmdbService();
