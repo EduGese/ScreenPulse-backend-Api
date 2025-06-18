@@ -21,18 +21,18 @@ exports.options = {
             description: 'ScreenPulse API documentation.',
             contact: {
                 name: 'Eduardo González',
-                email: 'your@email.com',
+                email: 'eddugonz@gmail.com',
                 url: 'https://github.com/EduGese/ScreenPulse-backend-Api'
             }
         },
         servers: [
             {
-                url: 'http://localhost:9000',
-                description: 'Local server'
-            },
-            {
                 url: "https://screenpulse-api.onrender.com",
                 description: "Live server"
+            },
+            {
+                url: 'http://localhost:9000',
+                description: 'Local server'
             },
         ],
         security: [
