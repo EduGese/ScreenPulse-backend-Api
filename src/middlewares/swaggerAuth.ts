@@ -9,12 +9,12 @@ const EXEMPT_ORIGIN = config.client.url || 'http://localhost:4200';
   */
 export const swaggerAuth = (req: Request, res: Response, next: NextFunction) => {
    const origin = req.headers.origin;
-  if( origin === EXEMPT_ORIGIN) {
+   const isDev = process.env.NODE_ENV !== 'production';
+  if(origin === EXEMPT_ORIGIN || (isDev && !origin)) {
       console.log('Swagger Auth Middleware: Exempting origin', origin);
       return next();
     }
   if (req.method !== 'GET') {
-    //console.log('Swagger Auth Middleware: Only GET requests are allowed');
     const apiKey = req.headers['x-api-key'];
     if (apiKey !== process.env.API_KEY) {
       return res.status(401).json({ error: 'Invalid API KEY', code: 'INVALID_API_KEY', status: 401 });
