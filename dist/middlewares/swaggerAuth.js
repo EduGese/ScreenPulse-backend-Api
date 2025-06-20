@@ -13,7 +13,9 @@ const EXEMPT_ORIGIN = config_1.default.client.url || 'http://localhost:4200';
   */
 const swaggerAuth = (req, res, next) => {
     const origin = req.headers.origin;
-    if (origin === EXEMPT_ORIGIN) {
+    const isDev = process.env.NODE_ENV !== 'production';
+    console.log('environment', process.env.NODE_ENV);
+    if (origin === EXEMPT_ORIGIN || (isDev && !origin)) {
         console.log('Swagger Auth Middleware: Exempting origin', origin);
         return next();
     }

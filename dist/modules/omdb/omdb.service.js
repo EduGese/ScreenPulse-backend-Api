@@ -31,15 +31,13 @@ class OmdbService {
                 });
                 if (response.data.Response === 'True') {
                     response.data.Search = response.data.Search.map((item) => {
-                        const newItem = {};
-                        for (const key in item) {
-                            if (['Title', 'Year', 'Type', 'Poster'].includes(key)) {
-                                newItem[key.toLowerCase()] = item[key];
-                            }
-                            else {
-                                newItem[key] = item[key];
-                            }
-                        }
+                        const newItem = {
+                            title: item.Title,
+                            year: item.Year,
+                            imdbID: item.imdbID,
+                            type: item.Type,
+                            poster: item.Poster
+                        };
                         return newItem;
                     });
                 }
