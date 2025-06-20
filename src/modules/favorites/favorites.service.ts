@@ -27,11 +27,11 @@ class FavoritesService {
     });
     const userIdObjectId = new Types.ObjectId(userId);
     if (!existingFavorite) {
-    const newFavoriteData = {
-      ...mediaItem,
-      user: [userIdObjectId],
-      descriptions: [],
-    };
+      const newFavoriteData = {
+        ...mediaItem,
+        user: [userIdObjectId],
+        descriptions: [],
+      };
       favorite = await favoritesSchema.create(newFavoriteData);
       user.favorites.push(favorite._id as Types.ObjectId);
     } else {
@@ -64,27 +64,27 @@ class FavoritesService {
     //   poster: favorite.poster
     // }
   }
-  
-/** 
-* Retrieves a paginated list of favorites for a user, with optional filtering and sorting.
-* @param {string} userId - The ID of the user whose favorites are to be retrieved.
-* @param {number} page - The page number for pagination.
-* @param {number} pageSize - The number of items per page.
-* @param {string} sortField - The field by which to sort the favorites ('title' or 'year').
-* @param {number} sortOrder - The order of sorting (1 for ascending, -1 for descending).
-* @param {string} [mediaType] - Optional filter for media type (e.g., 'movie', 'series').
-* @param {string} [searchTerm] - Optional search term to filter favorites by title.
-* @returns {Promise<FavoritesListWithMetadata>} A promise that resolves to an object containing the list of favorites, total count, current page, and page size.
-* @throws {ApiError} If the user is not found (404) or if there is an error retrieving the favorites.
-* 
-*/
+
+  /** 
+  * Retrieves a paginated list of favorites for a user, with optional filtering and sorting.
+  * @param {string} userId - The ID of the user whose favorites are to be retrieved.
+  * @param {number} page - The page number for pagination.
+  * @param {number} pageSize - The number of items per page.
+  * @param {string} sortField - The field by which to sort the favorites ('title' or 'year').
+  * @param {number} sortOrder - The order of sorting (1 for ascending, -1 for descending).
+  * @param {string} [mediaType] - Optional filter for media type (e.g., 'movie', 'series').
+  * @param {string} [searchTerm] - Optional search term to filter favorites by title.
+  * @returns {Promise<FavoritesListWithMetadata>} A promise that resolves to an object containing the list of favorites, total count, current page, and page size.
+  * @throws {ApiError} If the user is not found (404) or if there is an error retrieving the favorites.
+  * 
+  */
   async getFavorites(
     userId: string,
     page: number,
-    pageSize: number, 
-    sortField: string, 
-    sortOrder: number, 
-    mediaType?: string, 
+    pageSize: number,
+    sortField: string,
+    sortOrder: number,
+    mediaType?: string,
     searchTerm?: string): Promise<FavoritesListWithMetadata> {
     const user = await userSchema.findById(userId);
     if (!user) {
@@ -147,17 +147,17 @@ class FavoritesService {
       await favoritesSchema.findByIdAndDelete(movieId);
     }
   }
- /**
-  * Updates the description of a favorite mediaItem for a specific user.
-  * If the description does not exist, it creates a new one.
-  * @param {string} movieId - The ID of the favorite mediaItem to be updated.
-  * @param {string} userId - The ID of the user for whom the favorite mediaItem description is being updated.
-  * @param {string} description - The new description to be set for the favorite mediaItem.
-  * @returns {Promise<MediaItemDocument>} A promise that resolves to the updated favorite mediaItem object with the new description.
-  */
+  /**
+   * Updates the description of a favorite mediaItem for a specific user.
+   * If the description does not exist, it creates a new one.
+   * @param {string} movieId - The ID of the favorite mediaItem to be updated.
+   * @param {string} userId - The ID of the user for whom the favorite mediaItem description is being updated.
+   * @param {string} description - The new description to be set for the favorite mediaItem.
+   * @returns {Promise<MediaItemDocument>} A promise that resolves to the updated favorite mediaItem object with the new description.
+   */
   async updateFavorite(movieId: string, userId: string, description: string): Promise<MediaItemWithMetaData> {
-        const user = await userSchema.findById(userId);
-        if (!user) throw new ApiError(404, "User not found", "USER_NOT_FOUND");
+    const user = await userSchema.findById(userId);
+    if (!user) throw new ApiError(404, "User not found", "USER_NOT_FOUND");
 
     let existingDescription = await descriptionSchema.findOne({ userId, favoriteId: movieId });
     if (!existingDescription) {
@@ -193,23 +193,37 @@ class FavoritesService {
    * @param {MediaItemDocument[]} favorites - An array of favorite media items to which user descriptions will be added.
    * @return {Promise<MediaItemDocument[]>} A promise that resolves to an array of favorite media items with user descriptions added.
    */
-  private async addUserDescriptionsToFavorites(userId: string, favorites: MediaItemDocument[]): Promise<MediaItemDocument[]> {
+  private async addUserDescriptionsToFavorites(userId: string, favorites: MediaItemDocument[]): Promise<MediaItemWithMetaData[]> {
     return Promise.all(favorites.map(async (favorite) => {
       const descriptionDoc = await descriptionSchema.findOne({
         userId,
         favoriteId: favorite._id
       });
 
-      const { descriptions, user, ...cleanFavorite } = favorite.toObject ?
-        favorite.toObject() :
-        favorite;
+      // const { descriptions, user, ...cleanFavorite } = favorite.toObject ? favorite.toObject() : favorite;
+
+      // return {
+      //   ...favorite,
+      //   description: descriptionDoc?.description || ''
+      // };
+       const baseFavorite = favorite.toObject ? favorite.toObject() : favorite;
+      const cleanFavorite = this.omit(baseFavorite, ['descriptions', 'user']);
 
       return {
         ...cleanFavorite,
-        description: descriptionDoc?.description || ''
-      };
+        description: descriptionDoc?.description || '',
+      } as MediaItemWithMetaData;
     }));
   }
+  private omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+    const clone = { ...obj };
+    for (const key of keys) {
+      delete clone[key];
+    }
+    return clone;
+  }
+
+
 }
 
 

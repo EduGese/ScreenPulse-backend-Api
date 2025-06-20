@@ -1,6 +1,5 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import cors from 'cors';
 
 import config from './config/config';
 import { favoritesModule, omdbModule, userModule } from './modules';

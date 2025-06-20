@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { ApiError } from "../../errors/apiError";
-import { OmdbItemDetailResponse, OmdbItemMediaListResponse  } from "../../interfaces/omdb.interface";
+import { OmdbItemDetailResponse, OmdbItemMediaListResponse, OmdbSearchItem } from "../../interfaces/omdb.interface";
 
 
 
@@ -24,16 +24,13 @@ class OmdbService {
       );
       if (response.data.Response === 'True') {
         response.data.Search = response.data.Search.map((item) => {
-          const newItem: any = {}
-      
-          for (const key in item) {
-            if (['Title', 'Year', 'Type', 'Poster'].includes(key)) {
-              newItem[key.toLowerCase()] = item[key]
-            } else {
-              newItem[key] = item[key] 
-            }
+          const newItem: OmdbSearchItem = {
+            title: item.Title,
+            year: item.Year,
+            imdbID: item.imdbID,
+            type: item.Type,
+            poster: item.Poster
           }
-      
           return newItem
         })
       }
@@ -41,7 +38,6 @@ class OmdbService {
 
     } catch (error) {
       this.handleAxiosError(error);
-      
     }
   }
   async getOmdbItemMediaInfo(id: string): Promise<OmdbItemDetailResponse> {
@@ -58,17 +54,17 @@ class OmdbService {
       return response.data;
     } catch (error) {
       this.handleAxiosError(error);
-     
+
     }
   }
 
   private handleAxiosError(error: unknown): never {
-          if (axios.isAxiosError(error)) {
-        if (error.code === "ECONNABORTED") {
-           throw new ApiError(504, "OMDB request timed out", "TIMEOUT");
-        }
+    if (axios.isAxiosError(error)) {
+      if (error.code === "ECONNABORTED") {
+        throw new ApiError(504, "OMDB request timed out", "TIMEOUT");
       }
-      throw new ApiError(500, "Internal server error", "INTERNAL_ERROR");
+    }
+    throw new ApiError(500, "Internal server error", "INTERNAL_ERROR");
   }
 }
 
