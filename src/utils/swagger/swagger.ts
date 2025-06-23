@@ -6,6 +6,7 @@ import { omdbSchemas } from './shemas/omdb.schemas';
 import { omdbParameters } from './parameters/omdb.parameters';
 import { favoritesParameters } from './parameters/favorites.parameters';
 import { favoritesSchema } from './shemas/favorites.schema';
+import { Application } from 'express';
 
 
 
@@ -65,7 +66,7 @@ export const options = {
 export const swaggerSpec = swaggerJsdoc(options);
 
 
-export default (app: any) => {
+export default (app: Application) => {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   console.log('Swagger documentation is available at /api-docs');
 };
