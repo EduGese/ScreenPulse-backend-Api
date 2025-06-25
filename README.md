@@ -31,6 +31,7 @@ Once the server is running, you can make requests to the provided endpoints to p
 - **MongoDB Atlas:** Cloud-based database service.
 - **Axios:** Promise-based HTTP client for making requests to servers.
 - **Render:** Hosting service.
+- **Swagger UI:** Interactive API documentation and testing tool.
 
 ## API documentation
 [Swagger UI](https://edugese.github.io/ScreenPulse-backend-Api/)
