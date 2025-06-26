@@ -1,12 +1,7 @@
-import { Request, Response, NextFunction } from "express";
-import { ApiError } from "../errors/apiError";
+import { Request, Response, NextFunction } from 'express';
+import { ApiError } from '../errors/apiError';
 
-export function errorHandler(
-  err: unknown,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export function errorHandler(err: unknown, req: Request, res: Response, next: NextFunction) {
   if (res.headersSent) {
     return next(err);
   }
@@ -20,13 +15,13 @@ export function errorHandler(
   } else if (err instanceof Error) {
     res.status(500).json({
       error: err.message,
-      code: "INTERNAL_ERROR",
+      code: 'INTERNAL_ERROR',
       status: 500,
     });
   } else {
     res.status(500).json({
-      error: "Internal server error",
-      code: "INTERNAL_ERROR",
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
       status: 500,
     });
   }

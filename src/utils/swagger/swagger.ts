@@ -8,8 +8,6 @@ import { favoritesParameters } from './parameters/favorites.parameters';
 import { favoritesSchema } from './shemas/favorites.schema';
 import { Application } from 'express';
 
-
-
 export const options = {
   definition: {
     openapi: '3.0.0',
@@ -20,24 +18,23 @@ export const options = {
       contact: {
         name: 'Eduardo González',
         email: 'eddugonz@gmail.com',
-        url: 'https://github.com/EduGese/ScreenPulse-backend-Api'
-      }
+        url: 'https://github.com/EduGese/ScreenPulse-backend-Api',
+      },
     },
     servers: [
       {
-        url: "https://screenpulse-api.onrender.com",
-        description: "Live server"
+        url: 'https://screenpulse-api.onrender.com',
+        description: 'Live server',
       },
       {
         url: 'http://localhost:9000',
-        description: 'Local server'
+        description: 'Local server',
       },
-
     ],
     security: [
       {
-        ApiKeyAuth: []
-      }
+        ApiKeyAuth: [],
+      },
     ],
     components: {
       securitySchemes: {
@@ -45,26 +42,26 @@ export const options = {
           type: 'apiKey',
           in: 'header',
           name: 'x-api-key',
-          description: 'API key for writing operations on ScreenPulse API. You can obtain it contacting the administrator. Key will be validated when performing requests to endpoints that modify data. For read-only operations, the API key is not required.'
-        }
+          description:
+            'API key for writing operations on ScreenPulse API. You can obtain it contacting the administrator. Key will be validated when performing requests to endpoints that modify data. For read-only operations, the API key is not required.',
+        },
       },
       schemas: {
         ...userSchemas,
         ...globalSchemas,
         ...omdbSchemas,
-        ...favoritesSchema
+        ...favoritesSchema,
       },
       parameters: {
         ...omdbParameters,
-        ...favoritesParameters
-      }
-    }
+        ...favoritesParameters,
+      },
+    },
   },
   apis: ['./src/modules/**/*.ts', './src/utils/swagger/schemas/*.yaml'],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
-
 
 export default (app: Application) => {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

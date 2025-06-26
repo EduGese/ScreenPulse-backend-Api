@@ -4,49 +4,50 @@ export const globalSchemas = {
     properties: {
       error: {
         type: 'string',
-        example: 'Validation failed'
+        example: 'Validation failed',
       },
       code: {
         type: 'string',
-        example: 'VALIDATION_ERROR'
+        example: 'VALIDATION_ERROR',
       },
       status: {
         type: 'integer',
-        example: 400
+        example: 400,
       },
       errors: {
         type: 'array',
-        description: 'Array of validation errors. Each object describes a single validation failure.',
+        description:
+          'Array of validation errors. Each object describes a single validation failure.',
         items: {
           type: 'object',
           properties: {
-            msg:    { type: 'string', example: 'Email is invalid' },
-            param:  { type: 'string', example: 'email' },
+            msg: { type: 'string', example: 'Email is invalid' },
+            param: { type: 'string', example: 'email' },
             location: { type: 'string', example: 'body' },
-            value:  { type: 'string', example: 'not-an-email', nullable: true }
+            value: { type: 'string', example: 'not-an-email', nullable: true },
           },
-          required: ['msg', 'param', 'location']
-        }
-      }
+          required: ['msg', 'param', 'location'],
+        },
+      },
     },
-    required: ['error', 'code', 'status', 'errors']
+    required: ['error', 'code', 'status', 'errors'],
   },
   InternalServerError: {
     type: 'object',
     properties: {
       error: {
         type: 'string',
-        example: 'Internal server error'
+        example: 'Internal server error',
       },
       code: {
         type: 'string',
-        example: 'INTERNAL_ERROR'
+        example: 'INTERNAL_ERROR',
       },
       status: {
         type: 'integer',
-        example: 500
+        example: 500,
       },
     },
-    required: ['message', 'code', 'status']
-  }
-}
+    required: ['message', 'code', 'status'],
+  },
+};

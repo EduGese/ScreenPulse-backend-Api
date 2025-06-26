@@ -1,17 +1,24 @@
-import axios, { AxiosResponse } from "axios";
-import { ApiError } from "../../errors/apiError";
-import { OmdbItemDetailResponse, OmdbItemMediaListResponse, OmdbSearchItem } from "../../interfaces/omdb.interface";
-
-
+import axios, { AxiosResponse } from 'axios';
+import { ApiError } from '../../errors/apiError';
+import {
+  OmdbItemDetailResponse,
+  OmdbItemMediaListResponse,
+  OmdbSearchItem,
+} from '../../interfaces/omdb.interface';
 
 class OmdbService {
-  async getOmdbItemMediaList(title: string, type: string, year: string, page: string): Promise<OmdbItemMediaListResponse> {
-    type = type === "all" ? '' : type;
-    page = page ? page : "1";
+  async getOmdbItemMediaList(
+    title: string,
+    type: string,
+    year: string,
+    page: string,
+  ): Promise<OmdbItemMediaListResponse> {
+    type = type === 'all' ? '' : type;
+    page = page ? page : '1';
 
     try {
       const response: AxiosResponse<OmdbItemMediaListResponse> = await axios.get(
-        process.env.OMDB_URL || "",
+        process.env.OMDB_URL || '',
         {
           params: {
             apikey: process.env.OMDB_APIKEY,
@@ -20,7 +27,7 @@ class OmdbService {
             y: year,
             page: page,
           },
-        }
+        },
       );
       if (response.data.Response === 'True') {
         response.data.Search = response.data.Search.map((item) => {
@@ -29,13 +36,12 @@ class OmdbService {
             year: item.Year,
             imdbID: item.imdbID,
             type: item.Type,
-            poster: item.Poster
-          }
-          return newItem
-        })
+            poster: item.Poster,
+          };
+          return newItem;
+        });
       }
       return response.data;
-
     } catch (error) {
       this.handleAxiosError(error);
     }
@@ -43,28 +49,27 @@ class OmdbService {
   async getOmdbItemMediaInfo(id: string): Promise<OmdbItemDetailResponse> {
     try {
       const response: AxiosResponse<OmdbItemDetailResponse> = await axios.get(
-        process.env.OMDB_URL || "",
+        process.env.OMDB_URL || '',
         {
           params: {
             apikey: process.env.OMDB_APIKEY,
             i: id,
           },
-        }
+        },
       );
       return response.data;
     } catch (error) {
       this.handleAxiosError(error);
-
     }
   }
 
   private handleAxiosError(error: unknown): never {
     if (axios.isAxiosError(error)) {
-      if (error.code === "ECONNABORTED") {
-        throw new ApiError(504, "OMDB request timed out", "TIMEOUT");
+      if (error.code === 'ECONNABORTED') {
+        throw new ApiError(504, 'OMDB request timed out', 'TIMEOUT');
       }
     }
-    throw new ApiError(500, "Internal server error", "INTERNAL_ERROR");
+    throw new ApiError(500, 'Internal server error', 'INTERNAL_ERROR');
   }
 }
 

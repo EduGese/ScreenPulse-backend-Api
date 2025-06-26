@@ -7,23 +7,18 @@ export interface OmdbSearchItem {
   [key: string]: string;
 }
 
-
 export interface OmdbSearchSuccess {
   Search: OmdbSearchItem[];
   totalResults: string;
   Response: 'True';
 }
 
-
 export interface OmdbErrorResponse {
   Response: 'False';
   Error: string;
 }
 
-
 export type OmdbItemMediaListResponse = OmdbSearchSuccess | OmdbErrorResponse;
-
-
 
 export interface Rating {
   Source: string;

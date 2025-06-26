@@ -5,10 +5,10 @@ export function validate(req: Request, res: Response, next: NextFunction) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
-      error: "Validation failed",
-      code: "VALIDATION_ERROR",
+      error: 'Validation failed',
+      code: 'VALIDATION_ERROR',
       status: 400,
-      errors: errors.array()
+      errors: errors.array(),
     });
   }
   next();

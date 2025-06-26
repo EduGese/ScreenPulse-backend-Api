@@ -1,5 +1,5 @@
-import mongoose, { Schema } from "mongoose";
-import { User } from "../interfaces/user.interface";
+import mongoose, { Schema } from 'mongoose';
+import { User } from '../interfaces/user.interface';
 
 const UserSchema: Schema = new mongoose.Schema({
   name: {
@@ -9,23 +9,22 @@ const UserSchema: Schema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   password: {
     type: String,
     required: true,
-    
   },
   role: {
     type: String,
-    default: "regular",
+    default: 'regular',
   },
   favorites: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "MediaItem",
+      ref: 'MediaItem',
     },
   ],
 });
 
-export default mongoose.model<User>("User", UserSchema);
+export default mongoose.model<User>('User', UserSchema);
