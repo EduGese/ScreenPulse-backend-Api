@@ -1,9 +1,9 @@
-import express from "express";
+import express from 'express';
 
-import userController from "./user.controller";
-import { loginValidator, registerValidator } from "../../validators/userValidators";
-import { validate } from "../../middlewares/validate";
-import { swaggerAuth } from "../../middlewares/swaggerAuth";
+import userController from './user.controller';
+import { loginValidator, registerValidator } from '../../validators/userValidators';
+import { validate } from '../../middlewares/validate';
+import { swaggerAuth } from '../../middlewares/swaggerAuth';
 
 const _router = express.Router();
 /**
@@ -48,14 +48,14 @@ const _router = express.Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
- *       500: 
+ *       500:
  *         description: Internal server error
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.post("/login",swaggerAuth, loginValidator, validate, userController.loginUser);
+_router.post('/login', swaggerAuth, loginValidator, validate, userController.loginUser);
 
 /**
  * @swagger
@@ -92,7 +92,7 @@ _router.post("/login",swaggerAuth, loginValidator, validate, userController.logi
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
- *       500: 
+ *       500:
  *         description: Internal server error
  *         content:
  *           application/json:
@@ -100,6 +100,6 @@ _router.post("/login",swaggerAuth, loginValidator, validate, userController.logi
  *               $ref: '#/components/schemas/InternalServerError'
  */
 
-_router.post("/register", swaggerAuth, registerValidator, validate, userController.registertUser);
+_router.post('/register', swaggerAuth, registerValidator, validate, userController.registertUser);
 
 export const router = _router;

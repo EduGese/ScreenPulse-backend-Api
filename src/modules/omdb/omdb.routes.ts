@@ -1,8 +1,10 @@
 import express from 'express';
 import omdbController from './omdb.controller';
-import { fetchingOmdbMoviesValidator, omdbMovieInfoValidator } from '../../validators/omdbValidators';
+import {
+  fetchingOmdbMoviesValidator,
+  omdbMovieInfoValidator,
+} from '../../validators/omdbValidators';
 import { validate } from '../../middlewares/validate';
-
 
 const _router = express.Router();
 /**
@@ -11,7 +13,6 @@ const _router = express.Router();
  *   name: Omdb
  *   description: Operations related to OMDB API for media items (movies, series, games)
  */
-
 
 /**
  * @swagger
@@ -106,6 +107,5 @@ _router.get('/', fetchingOmdbMoviesValidator, validate, omdbController.getOmdbIt
  *               $ref: '#/components/schemas/InternalServerError'
  */
 _router.get('/:id', omdbMovieInfoValidator, validate, omdbController.getOmdbItemMediaInfo);
-
 
 export const router = _router;

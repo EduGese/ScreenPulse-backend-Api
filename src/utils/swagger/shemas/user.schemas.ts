@@ -82,7 +82,7 @@ export const userSchemas = {
         type: 'array',
         items: {
           type: 'string',
-          example:[],
+          example: [],
         },
       },
       _id: {
@@ -101,15 +101,15 @@ export const userSchemas = {
     properties: {
       error: {
         type: 'string',
-        example: 'Invalid login credentials'
+        example: 'Invalid login credentials',
       },
       code: {
         type: 'string',
-        example: 'AUTH_ERROR'
+        example: 'AUTH_ERROR',
       },
       status: {
         type: 'integer',
-        example: 401
+        example: 401,
       },
     },
   },
@@ -118,15 +118,15 @@ export const userSchemas = {
     properties: {
       error: {
         type: 'string',
-        example: 'User already exists'
+        example: 'User already exists',
       },
       code: {
         type: 'string',
-        example: 'USER_EXISTS'
+        example: 'USER_EXISTS',
       },
       status: {
         type: 'integer',
-        example: 409
+        example: 409,
       },
     },
   },

@@ -5,7 +5,6 @@ export interface FavoritesListWithMetadata {
   totalFavorites: number;
   currentPage: number;
   pageSize: number;
-
 }
 
 export interface MediaItemDocument extends Document {
@@ -44,7 +43,6 @@ export interface MediaItemInput {
   poster: string;
   description?: string;
 }
-
 
 export interface FavoriteResponse {
   _id: Types.ObjectId;

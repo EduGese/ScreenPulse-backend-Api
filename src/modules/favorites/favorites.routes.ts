@@ -1,7 +1,12 @@
 import express from 'express';
 
 import favoritesController from './favorites.controller';
-import { createFavoriteValidator, deleteFavoriteValidator, getFavoritesValidator, updateFavoriteValidator } from '../../validators/favoritesValidator';
+import {
+  createFavoriteValidator,
+  deleteFavoriteValidator,
+  getFavoritesValidator,
+  updateFavoriteValidator,
+} from '../../validators/favoritesValidator';
 import { validate } from '../../middlewares/validate';
 import { swaggerAuth } from '../../middlewares/swaggerAuth';
 
@@ -12,7 +17,6 @@ const _router = express.Router();
  *   name: Favorites
  *   description: API endpoints for managing user favorites.
  */
-
 
 /**
  * @swagger
@@ -74,7 +78,13 @@ const _router = express.Router();
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.post('/:userId', swaggerAuth, createFavoriteValidator, validate, favoritesController.createFavorite);
+_router.post(
+  '/:userId',
+  swaggerAuth,
+  createFavoriteValidator,
+  validate,
+  favoritesController.createFavorite,
+);
 
 /**
  * @swagger
@@ -131,7 +141,13 @@ _router.post('/:userId', swaggerAuth, createFavoriteValidator, validate, favorit
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.get('/:userId', swaggerAuth, getFavoritesValidator, validate, favoritesController.getFavorites);
+_router.get(
+  '/:userId',
+  swaggerAuth,
+  getFavoritesValidator,
+  validate,
+  favoritesController.getFavorites,
+);
 
 /**
  * @swagger
@@ -198,7 +214,13 @@ _router.get('/:userId', swaggerAuth, getFavoritesValidator, validate, favoritesC
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.delete('/:id/:userId', swaggerAuth, deleteFavoriteValidator, validate, favoritesController.deleteFavorite);
+_router.delete(
+  '/:id/:userId',
+  swaggerAuth,
+  deleteFavoriteValidator,
+  validate,
+  favoritesController.deleteFavorite,
+);
 
 /**
  * @swagger
@@ -210,7 +232,7 @@ _router.delete('/:id/:userId', swaggerAuth, deleteFavoriteValidator, validate, f
  *      - Favorites
  *     summary: Update a favorite
  *     description: |
- * 
+ *
  *       Updates the description of a favorite item for a specific user.
  *       - If the favorite has no description, this endpoint will add one.
  *       - If the request body contains an empty string (""), the existing description will be removed.
@@ -227,14 +249,14 @@ _router.delete('/:id/:userId', swaggerAuth, deleteFavoriteValidator, validate, f
  *           schema:
  *             $ref: '#/components/schemas/UpdateFavoriteRequest'
  *           examples:
- *             addOrUpdate:    
+ *             addOrUpdate:
  *               summary: Add or update description
  *               value:
  *                 description: "A mind-bending thriller about dreams within dreams."
  *             remove:
  *               summary: Remove description
  *               value:
- *                 description: ""   
+ *                 description: ""
  *     responses:
  *       200:
  *         description: Favorite updated successfully
@@ -290,7 +312,12 @@ _router.delete('/:id/:userId', swaggerAuth, deleteFavoriteValidator, validate, f
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.patch('/:id/:userId', swaggerAuth, updateFavoriteValidator, validate,favoritesController.updateFavorite);
-
+_router.patch(
+  '/:id/:userId',
+  swaggerAuth,
+  updateFavoriteValidator,
+  validate,
+  favoritesController.updateFavorite,
+);
 
 export const router = _router;
