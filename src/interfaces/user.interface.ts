@@ -27,3 +27,9 @@ export interface UserRegisterResponse {
   _id: string;
   __v: number;
 }
+
+export interface UserRegisterDTO {
+  name: string;
+  email: string;
+  password: string;
+}
