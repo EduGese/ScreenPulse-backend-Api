@@ -58,15 +58,6 @@ class FavoritesService {
       poster: favorite.poster,
     };
     return favoriteResponse;
-
-    // return {
-    //   _id: favorite._id,
-    //   title: favorite.title,
-    //   year: favorite.year,
-    //   imdbID: favorite.imdbID,
-    //   type: favorite.type,
-    //   poster: favorite.poster
-    // }
   }
 
   /**
