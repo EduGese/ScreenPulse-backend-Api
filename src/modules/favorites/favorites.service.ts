@@ -212,12 +212,6 @@ class FavoritesService {
           favoriteId: favorite._id,
         });
 
-        // const { descriptions, user, ...cleanFavorite } = favorite.toObject ? favorite.toObject() : favorite;
-
-        // return {
-        //   ...favorite,
-        //   description: descriptionDoc?.description || ''
-        // };
         const baseFavorite = favorite.toObject ? favorite.toObject() : favorite;
         const cleanFavorite = this.omit(baseFavorite, ['descriptions', 'user']);
 
