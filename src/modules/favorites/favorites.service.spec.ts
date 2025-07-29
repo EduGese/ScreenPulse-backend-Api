@@ -10,7 +10,6 @@ jest.mock('../../models/user');
 jest.mock('../../models/favorites');
 jest.mock('../../models/description');
 
-// IDs válidos para Mongo
 const validUserId = new Types.ObjectId().toHexString();
 const anotherUserId = new Types.ObjectId().toHexString();
 const validFavId = new Types.ObjectId();
