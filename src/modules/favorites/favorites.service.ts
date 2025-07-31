@@ -58,15 +58,6 @@ class FavoritesService {
       poster: favorite.poster,
     };
     return favoriteResponse;
-
-    // return {
-    //   _id: favorite._id,
-    //   title: favorite.title,
-    //   year: favorite.year,
-    //   imdbID: favorite.imdbID,
-    //   type: favorite.type,
-    //   poster: favorite.poster
-    // }
   }
 
   /**
@@ -221,12 +212,6 @@ class FavoritesService {
           favoriteId: favorite._id,
         });
 
-        // const { descriptions, user, ...cleanFavorite } = favorite.toObject ? favorite.toObject() : favorite;
-
-        // return {
-        //   ...favorite,
-        //   description: descriptionDoc?.description || ''
-        // };
         const baseFavorite = favorite.toObject ? favorite.toObject() : favorite;
         const cleanFavorite = this.omit(baseFavorite, ['descriptions', 'user']);
 

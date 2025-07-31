@@ -1,5 +1,5 @@
 import userSchema from '../../models/user';
-import { User, UserLoginResponse, UserRegisterResponse } from '../../interfaces/user.interface';
+import { User, UserLoginResponse, UserRegisterDTO, UserRegisterResponse } from '../../interfaces/user.interface';
 import bcriptjs from 'bcryptjs';
 import jsonwebtoken from 'jsonwebtoken';
 import { ApiError } from '../../errors/apiError';
@@ -33,7 +33,7 @@ class UserService {
    * @returns {Promise<User>} The created user object.
    * @throws {ApiError} If a user with the same email already exists.
    */
-  async registerUser(userData: User): Promise<UserRegisterResponse> {
+  async registerUser(userData: UserRegisterDTO ): Promise<UserRegisterResponse> {
     const userExist = await userSchema.findOne({ email: userData.email });
     if (userExist) {
       throw new ApiError(409, 'User already exists', 'USER_EXISTS');

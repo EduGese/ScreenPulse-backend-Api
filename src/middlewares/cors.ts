@@ -2,12 +2,16 @@ import cors from 'cors';
 import config from '../config/config';
 
 const allowedOrigins = [config.client.url, 'https://edugese.github.io'];
-console.log('CORS Middleware initialized with allowed origins:', allowedOrigins);
+
+export function isAllowedOrigin(origin?: string): boolean {
+  if (!origin) return true;
+  return allowedOrigins.includes(origin);
+}
+
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     console.log('Incoming origin:', origin);
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
     console.log('CORS error: Origin not allowed:', origin);
