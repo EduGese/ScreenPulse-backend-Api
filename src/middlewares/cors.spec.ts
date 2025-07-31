@@ -1,8 +1,14 @@
+jest.mock('../config/config', () => ({
+  __esModule: true,
+  default: {
+    client: { url: 'http://localhost:4200' }
+  }
+}));
+
 import { isAllowedOrigin } from './cors';
 
 describe('isAllowedOrigin', () => {
   it('returns true for an allowed origin from config', () => {
-    // Simulate process.env/config value for the test if needed
     expect(isAllowedOrigin('http://localhost:4200')).toBe(true);
     expect(isAllowedOrigin('https://edugese.github.io')).toBe(true);
   });
