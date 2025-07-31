@@ -1,4 +1,4 @@
-name: Lint Validation
+name: Lint and Test Validation
 
 on:
   push:
