@@ -10,11 +10,11 @@ export function isAllowedOrigin(origin?: string): boolean {
 
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    console.log('Incoming origin:', origin);
+    //console.log('Incoming origin:', origin);
     if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
-    console.log('CORS error: Origin not allowed:', origin);
+    //console.log('CORS error: Origin not allowed:', origin);
     return callback(new Error('Not allowed by CORS'));
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
