@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { FavoritesListWithMetadata } from '../../interfaces/favorites.interface';
 import favoritesService from './favorites.service';
+import { AuthenticatedRequest } from '../../interfaces/authenticatedRequest.interface';
 
 class FavoritesController {
   /**
@@ -30,7 +31,7 @@ class FavoritesController {
    * @param {express.Next} next is the middleware to continue with code execution
    * @returns {Promise<void>} Returns object containing the list of favorites, total count, current page, and page size.
    */
-  async getFavorites(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getFavorites(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const page = req.query.page ? parseInt(req.query.page as string) : 1;
       const pageSize = req.query.pageSize ? parseInt(req.query.pageSize as string) : 10;
@@ -38,7 +39,8 @@ class FavoritesController {
       const sortOrder = req.query.sortOrder ? parseInt(req.query.sortOrder as string) : -1;
       const mediaType = req.query.type ? (req.query.type as string) : undefined;
       const searchTerm = req.query.searchTerm ? (req.query.searchTerm as string) : undefined;
-      const userId = req.params.userId;
+      // const userId = req.params.userId;
+      const userId = req.userId!;
 
       const favoritesListWithMetadata: FavoritesListWithMetadata =
         await favoritesService.getFavorites(

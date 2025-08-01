@@ -9,6 +9,7 @@ import {
 } from '../../validators/favoritesValidator';
 import { validate } from '../../middlewares/validate';
 import { swaggerAuth } from '../../middlewares/swaggerAuth';
+import { userAuth } from '../../middlewares/userAuth';
 
 const _router = express.Router();
 /**
@@ -142,7 +143,8 @@ _router.post(
  *               $ref: '#/components/schemas/InternalServerError'
  */
 _router.get(
-  '/:userId',
+  '/',
+  userAuth,
   swaggerAuth,
   getFavoritesValidator,
   validate,

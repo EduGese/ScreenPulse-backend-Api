@@ -49,14 +49,6 @@ export const createFavoriteValidator = [
 ];
 
 export const getFavoritesValidator = [
-  param('userId')
-    .trim()
-    .notEmpty()
-    .withMessage('userId is required')
-    .isString()
-    .withMessage('userId must be a string')
-    .isMongoId()
-    .withMessage('userId must be a valid MongoDB ObjectId'),
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('pageSize')
     .optional()

@@ -58,7 +58,6 @@ class UserService {
   private static createToken(user: User): string {
     const payload = {
       user_id: user._id,
-      user_role: user.role,
     };
     return jsonwebtoken.sign(payload, process.env.TOKEN_SECRET || 'token');
   }
