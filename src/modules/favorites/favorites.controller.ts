@@ -14,9 +14,11 @@ class FavoritesController {
    * @returns {Promise<void>}
    * @throws {ApiError} If the user is not found or the favorite already exists for this user.
    */
-  async createFavorite(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async createFavorite(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const createdFavorite = await favoritesService.createFavorite(req.params.userId, req.body);
+      const userId = req.userId!;
+      const createdFavorite = await favoritesService.createFavorite(userId, req.body);
+      console.log('Created favorite:', createdFavorite);
       res.status(201).json(createdFavorite);
     } catch (error: unknown) {
       next(error);
@@ -39,7 +41,6 @@ class FavoritesController {
       const sortOrder = req.query.sortOrder ? parseInt(req.query.sortOrder as string) : -1;
       const mediaType = req.query.type ? (req.query.type as string) : undefined;
       const searchTerm = req.query.searchTerm ? (req.query.searchTerm as string) : undefined;
-      // const userId = req.params.userId;
       const userId = req.userId!;
 
       const favoritesListWithMetadata: FavoritesListWithMetadata =

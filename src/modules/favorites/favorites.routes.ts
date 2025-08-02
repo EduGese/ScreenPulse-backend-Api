@@ -80,7 +80,8 @@ const _router = express.Router();
  *               $ref: '#/components/schemas/InternalServerError'
  */
 _router.post(
-  '/:userId',
+  '/',
+  userAuth,
   swaggerAuth,
   createFavoriteValidator,
   validate,

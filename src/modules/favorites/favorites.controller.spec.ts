@@ -29,7 +29,7 @@ describe('FavoritesController', () => {
 
   describe('createFavorite', () => {
     it('should create a favorite and return 201 with data', async () => {
-      req.params = { userId: '507f191e810c19729de860ea' };
+      req.userId ='507f191e810c19729de860ea';
       req.body = { imdbID: 'movie1', title: 'The Movie' };
       const createdFavorite = { _id: 'f1', imdbID: 'movie1', title: 'The Movie' };
       (favoritesService.createFavorite as jest.Mock).mockResolvedValue(createdFavorite);

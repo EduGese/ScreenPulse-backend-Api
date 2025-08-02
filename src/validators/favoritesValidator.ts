@@ -38,14 +38,6 @@ export const createFavoriteValidator = [
     .withMessage('Poster is required')
     .isURL()
     .withMessage('Poster must be a valid URL'),
-  param('userId')
-    .trim()
-    .notEmpty()
-    .withMessage('userId is required')
-    .isString()
-    .withMessage('userId must be a string')
-    .isMongoId()
-    .withMessage('userId must be a valid MongoDB ObjectId'),
 ];
 
 export const getFavoritesValidator = [
