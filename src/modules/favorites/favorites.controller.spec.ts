@@ -2,10 +2,14 @@ import FavoritesController from './favorites.controller';
 import favoritesService from './favorites.service';
 import { Request, Response, NextFunction } from 'express';
 
+type MockAuthRequest = Partial<Request> & { userId?: string };
+
+
+
 jest.mock('./favorites.service');
 
 describe('FavoritesController', () => {
-  let req: Partial<Request>;
+  let req: MockAuthRequest;
   let res: Partial<Response>;
   let next: jest.Mock;
   let statusMock: jest.Mock;
@@ -54,7 +58,7 @@ describe('FavoritesController', () => {
 
   describe('getFavorites', () => {
     it('should return 200 with favorites list and metadata', async () => {
-      req.params = { userId: '507f191e810c19729de860eb' };
+      req.userId = '507f191e810c19729de860eb';
       req.query = { page: '2', pageSize: '5', sortField: 'title', sortOrder: '1', type: 'movie', searchTerm: 'test' };
       const stubFavorites = { favorites: [], totalFavorites: 1, currentPage: 2, pageSize: 5 };
       (favoritesService.getFavorites as jest.Mock).mockResolvedValue(stubFavorites);
@@ -76,7 +80,7 @@ describe('FavoritesController', () => {
     });
 
     it('should use defaults if query params are missing', async () => {
-      req.params = { userId: '507f191e810c19729de860ec' };
+      req.userId =  '507f191e810c19729de860ec';
       req.query = {};
       const stubFavorites = { favorites: [], totalFavorites: 0, currentPage: 1, pageSize: 10 };
       (favoritesService.getFavorites as jest.Mock).mockResolvedValue(stubFavorites);

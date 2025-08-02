@@ -21,7 +21,6 @@ describe('UserService', () => {
                 email: 'test@mail.com',
                 name: 'Test',
                 password: 'hashed',
-                role: 'user'
             };
             (userSchema.findOne as jest.Mock).mockResolvedValue(mockUser);
             (bcriptjs.compareSync as jest.Mock).mockReturnValue(true);
@@ -38,7 +37,7 @@ describe('UserService', () => {
                     name: 'Test',
                 },
             } as UserLoginResponse);
-            expect(jsonwebtoken.sign).toHaveBeenCalledWith({ user_id: mockUser._id, user_role: mockUser.role },expect.any(String));
+            expect(jsonwebtoken.sign).toHaveBeenCalledWith({ user_id: mockUser._id },expect.any(String));
             expect(userSchema.findOne).toHaveBeenCalledWith({ email: 'test@mail.com' });
             expect(bcriptjs.compareSync).toHaveBeenCalledWith(testPassword, mockUser.password);
 
