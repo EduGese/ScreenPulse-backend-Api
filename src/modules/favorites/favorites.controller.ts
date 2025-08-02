@@ -68,9 +68,10 @@ class FavoritesController {
    * @param {express.Next} next is the middleware to continue with code execution
    * @returns {Promise<void>} Returns a success message if the operation was successful.
    */
-  async deleteFavorite(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async deleteFavorite(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      await favoritesService.deleteFavorite(req.params.id, req.params.userId);
+      const userId = req.userId!;
+      await favoritesService.deleteFavorite(req.params.id, userId);
 
       res.status(200).json({ message: 'Element deleted successfully', data: {} });
     } catch (error: unknown) {

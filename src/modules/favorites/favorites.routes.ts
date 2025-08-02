@@ -218,7 +218,8 @@ _router.get(
  *               $ref: '#/components/schemas/InternalServerError'
  */
 _router.delete(
-  '/:id/:userId',
+  '/:id',
+  userAuth,
   swaggerAuth,
   deleteFavoriteValidator,
   validate,

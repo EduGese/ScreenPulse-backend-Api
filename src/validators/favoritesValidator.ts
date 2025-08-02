@@ -70,14 +70,6 @@ export const deleteFavoriteValidator = [
     .withMessage('Item id must be a string')
     .isMongoId()
     .withMessage('Item id must be a valid MongoDB ObjectId'),
-  param('userId')
-    .trim()
-    .notEmpty()
-    .withMessage('userId is required')
-    .isString()
-    .withMessage('userId must be a string')
-    .isMongoId()
-    .withMessage('userId must be a valid MongoDB ObjectId'),
 ];
 export const updateFavoriteValidator = [
   param('id')

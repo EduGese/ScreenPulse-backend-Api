@@ -43,7 +43,7 @@ describe('FavoritesController', () => {
     });
 
     it('should call next with error if service fails', async () => {
-      req.params = { userId: '507f191e810c19729de860ea' };
+      req.userId ='507f191e810c19729de860ea';
       req.body = { imdbID: 'movie1', title: 'The Movie' };
       const error = new Error('Favorite exists');
       (favoritesService.createFavorite as jest.Mock).mockRejectedValue(error);
@@ -102,7 +102,7 @@ describe('FavoritesController', () => {
     });
 
     it('should call next with error if service fails', async () => {
-      req.params = { userId: '507f191e810c19729de860ed' };
+      req.userId = '507f191e810c19729de860ed';
       req.query = {};
       const error = new Error('user not found');
       (favoritesService.getFavorites as jest.Mock).mockRejectedValue(error);
@@ -117,7 +117,8 @@ describe('FavoritesController', () => {
 
   describe('deleteFavorite', () => {
     it('should delete favorite and send 200 with message', async () => {
-      req.params = { id: '507f191e810c19729de860ab', userId: '507f191e810c19729de860ac' };
+      req.params = { id: '507f191e810c19729de860ab'};
+      req.userId = '507f191e810c19729de860ac';
       (favoritesService.deleteFavorite as jest.Mock).mockResolvedValue(undefined);
 
       await FavoritesController.deleteFavorite(req as Request, res as Response, next as NextFunction);
@@ -129,7 +130,8 @@ describe('FavoritesController', () => {
     });
 
     it('should call next with error if service fails', async () => {
-      req.params = { id: '507f191e810c19729de860ab', userId: '507f191e810c19729de860ac' };
+      req.params = { id: '507f191e810c19729de860ab'};
+      req.userId = '507f191e810c19729de860ac';
       const error = new Error('Not found');
       (favoritesService.deleteFavorite as jest.Mock).mockRejectedValue(error);
 
@@ -160,7 +162,7 @@ describe('FavoritesController', () => {
       expect(next).not.toHaveBeenCalled();
     });
 
-    it('should call next with error if service fails', async () => {
+    it('should call next with error if service fails to update an item', async () => {
       req.params = { id: '507f191e810c19729de860ff', userId: '507f191e810c19729de86100' };
       req.body = { description: 'New' };
       const error = new Error('update failed');
