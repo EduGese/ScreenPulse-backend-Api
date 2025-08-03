@@ -317,7 +317,8 @@ _router.delete(
  *               $ref: '#/components/schemas/InternalServerError'
  */
 _router.patch(
-  '/:id/:userId',
+  '/:id',
+  userAuth,
   swaggerAuth,
   updateFavoriteValidator,
   validate,

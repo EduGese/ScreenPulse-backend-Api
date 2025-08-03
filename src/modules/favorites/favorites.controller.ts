@@ -1,5 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
-
+import { Response, NextFunction } from 'express';
 import { FavoritesListWithMetadata } from '../../interfaces/favorites.interface';
 import favoritesService from './favorites.service';
 import { AuthenticatedRequest } from '../../interfaces/authenticatedRequest.interface';
@@ -87,11 +86,12 @@ class FavoritesController {
    * @param {express.Next} next is the middleware to continue with code execution
    * @returns {Promise<void>} Returns the updated favorite item.
    */
-  async updateFavorite(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async updateFavorite(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
+      const userId = req.userId!;
       const updatedItem = await favoritesService.updateFavorite(
         req.params.id,
-        req.params.userId,
+        userId,
         req.body.description,
       );
 

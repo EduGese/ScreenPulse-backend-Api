@@ -145,7 +145,8 @@ describe('FavoritesController', () => {
 
   describe('updateFavorite', () => {
     it('should update favorite and send 200 with updated item', async () => {
-      req.params = { id: '507f191e810c19729de860dd', userId: '507f191e810c19729de860ee' };
+      req.params = { id: '507f191e810c19729de860dd'};
+      req.userId = '507f191e810c19729de860ee';
       req.body = { description: 'Nueva descripción' };
       const updated = { _id: '507f191e810c19729de860dd', description: 'Nueva descripción' };
       (favoritesService.updateFavorite as jest.Mock).mockResolvedValue(updated);
