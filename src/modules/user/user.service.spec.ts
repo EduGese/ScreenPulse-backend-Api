@@ -37,7 +37,7 @@ describe('UserService', () => {
                     name: 'Test',
                 },
             } as UserLoginResponse);
-            expect(jsonwebtoken.sign).toHaveBeenCalledWith({ user_id: mockUser._id },expect.any(String));
+            expect(jsonwebtoken.sign).toHaveBeenCalledWith({ user_id: mockUser._id },expect.any(String), { expiresIn: '1h' });
             expect(userSchema.findOne).toHaveBeenCalledWith({ email: 'test@mail.com' });
             expect(bcriptjs.compareSync).toHaveBeenCalledWith(testPassword, mockUser.password);
 

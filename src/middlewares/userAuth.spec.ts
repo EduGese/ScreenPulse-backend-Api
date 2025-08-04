@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import { userAuth } from './userAuth'; 
 import { ApiError } from '../errors/apiError';
 
@@ -40,7 +40,7 @@ describe('userAuth middleware', () => {
 
     it('calls next with ApiError if token is invalid', () => {
         req.headers = { authorization: 'Bearer some.invalid.token' };
-        mockedJwt.verify.mockImplementation(() => { throw new Error('Invalid token'); });
+        mockedJwt.verify.mockImplementation(() => { throw new JsonWebTokenError('Invalid token'); });
 
         userAuth(req as MockAuthenticatedRequest, res as Response, next);
 

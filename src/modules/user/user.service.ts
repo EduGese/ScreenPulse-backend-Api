@@ -59,7 +59,7 @@ class UserService {
     const payload = {
       user_id: user._id,
     };
-    return jsonwebtoken.sign(payload, process.env.TOKEN_SECRET || 'token');
+    return jsonwebtoken.sign(payload, process.env.TOKEN_SECRET || 'token', { expiresIn: '1h' } );
   }
 }
 
