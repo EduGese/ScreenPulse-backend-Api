@@ -7,7 +7,6 @@ import { omdbParameters } from './parameters/omdb.parameters';
 import { favoritesParameters } from './parameters/favorites.parameters';
 import { favoritesSchema } from './shemas/favorites.schema';
 import { Application } from 'express';
-
 export const options = {
   definition: {
     openapi: '3.0.0',
@@ -23,28 +22,27 @@ export const options = {
     },
     servers: [
       {
-        url: 'https://screenpulse-api.onrender.com',
-        description: 'Live server',
-      },
-      {
         url: 'http://localhost:9000',
         description: 'Local server',
       },
+      {
+        url: 'https://screenpulse-api.onrender.com',
+        description: 'Live server',
+      },
     ],
     security: [
-      {
-        ApiKeyAuth: [],
-      },
+      // {
+      //   ApiKeyAuth: [],
+      // },
     ],
     components: {
       securitySchemes: {
-        ApiKeyAuth: {
-          type: 'apiKey',
-          in: 'header',
-          name: 'x-api-key',
-          description:
-            'API key for writing operations on ScreenPulse API. You can obtain it contacting the administrator. Key will be validated when performing requests to endpoints that modify data. For read-only operations, the API key is not required.',
-        },
+        BearerToken: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Bearer token for user authentication. This JWT token is obtained by successfully logging in via the /api/user/login endpoint. It must be included in the Authorization header as "Bearer <token>" when making requests to endpoints that require authentication, such as favorites management. This token is not required for public endpoints like user registration or login.'
+        }
       },
       schemas: {
         ...userSchemas,

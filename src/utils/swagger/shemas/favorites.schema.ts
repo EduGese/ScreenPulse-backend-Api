@@ -246,4 +246,26 @@ export const favoritesSchema = {
       },
     },
   },
+  Unauthorized: {
+    type: 'object',
+    properties: {
+      error: {
+        type: 'string',
+        example: 'No token provided'
+      },
+      code: {
+        type: 'string',
+        example: 'AUTH_MISSING_TOKEN'
+      },
+      status: {
+        type: 'intege',
+        example: 401
+      }
+    },
+    required: [
+      'error',
+      'code',
+      'status'
+    ]
+  }
 };

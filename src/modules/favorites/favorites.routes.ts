@@ -8,7 +8,6 @@ import {
   updateFavoriteValidator,
 } from '../../validators/favoritesValidator';
 import { validate } from '../../middlewares/validate';
-import { swaggerAuth } from '../../middlewares/swaggerAuth';
 import { userAuth } from '../../middlewares/userAuth';
 
 const _router = express.Router();
@@ -21,15 +20,13 @@ const _router = express.Router();
 
 /**
  * @swagger
- * /api/favorites/{userId}:
+ * /api/favorites:
  *   post:
  *     security:
- *       - ApiKeyAuth: []
+ *       - BearerToken: []
  *     tags: [Favorites]
  *     summary: Create a new favorite
- *     description: Create a new favorite for a user.
- *     parameters:
- *       - $ref: '#/components/parameters/UserIdParam'
+ *     description: Create a new favorite for a user. UserId extracted from JWT auth token.
  *     requestBody:
  *       required: true
  *       content:
@@ -60,6 +57,19 @@ const _router = express.Router();
  *                 - msg: "imdbID must be a valid string"
  *                   param: "imdbID"
  *                   location: "body"
+ *       401:
+ *         description: Missing, expired or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Unauthorized'
+ *             examples:
+ *               TokenMissing:
+ *                 value: { error: "No token provided", code: "AUTH_MISSING_TOKEN", status: 401 }
+ *               TokenExpired:
+ *                 value: { error: "Token expired", code: "AUTH_TOKEN_EXPIRED", status: 401 }
+ *               TokenInvalid:
+ *                 value: { error: "Invalid token", code: "AUTH_INVALID_TOKEN", status: 401 }
  *       404:
  *         description: User not found
  *         content:
@@ -72,17 +82,17 @@ const _router = express.Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/FavoriteAlreadyExists'
- *       500:
+ *       500: 
  *         description: Internal server error
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
+
 _router.post(
   '/',
   userAuth,
-  swaggerAuth,
   createFavoriteValidator,
   validate,
   favoritesController.createFavorite,
@@ -90,16 +100,15 @@ _router.post(
 
 /**
  * @swagger
- * /api/favorites/{userId}:
+ * /api/favorites:
  *   get:
  *     security:
- *       - ApiKeyAuth: []
+ *       - BearerToken: []
  *     tags:
  *       - Favorites
  *     summary: Get user's favorites
  *     description: Retrieve a paginated list of a user's favorites, total count, current page, and page size with optional filtering and sorting.
  *     parameters:
- *       - $ref: '#/components/parameters/UserIdParam'
  *       - $ref: '#/components/parameters/FavoritesPageParam'
  *       - $ref: '#/components/parameters/FavoritesPageSizeParam'
  *       - $ref: '#/components/parameters/FavoritesSortFieldParam'
@@ -146,7 +155,6 @@ _router.post(
 _router.get(
   '/',
   userAuth,
-  swaggerAuth,
   getFavoritesValidator,
   validate,
   favoritesController.getFavorites,
@@ -154,17 +162,16 @@ _router.get(
 
 /**
  * @swagger
- * /api/favorites/{id}/{userId}:
+ * /api/favorites/{id}:
  *   delete:
  *     security:
- *       - ApiKeyAuth: []
+ *       - BearerToken: []
  *     tags:
  *       - Favorites
  *     summary: Delete a favorite
  *     description: Deletes a favorite item by its ID for a specific user. If the favorite is the last one associated with the media item, the media item is also deleted.
  *     parameters:
  *       - $ref: '#/components/parameters/MediaItemIdParams'
- *       - $ref: '#/components/parameters/UserIdParam'
  *     responses:
  *       200:
  *         description: Favorite deleted successfully
@@ -220,7 +227,6 @@ _router.get(
 _router.delete(
   '/:id',
   userAuth,
-  swaggerAuth,
   deleteFavoriteValidator,
   validate,
   favoritesController.deleteFavorite,
@@ -228,10 +234,10 @@ _router.delete(
 
 /**
  * @swagger
- * /api/favorites/{id}/{userId}:
+ * /api/favorites/{id}:
  *   patch:
  *     security:
- *       - ApiKeyAuth: []
+ *       - BearerToken: []
  *     tags:
  *      - Favorites
  *     summary: Update a favorite
@@ -244,7 +250,6 @@ _router.delete(
  *       The description is a user-generated note about the favorite media item.
  *     parameters:
  *       - $ref: '#/components/parameters/MediaItemIdParams'
- *       - $ref: '#/components/parameters/UserIdParam'
  *     requestBody:
  *       description: Description of the favorite item to be updated. Can be an empty string to remove the description.
  *       required: true
@@ -319,7 +324,6 @@ _router.delete(
 _router.patch(
   '/:id',
   userAuth,
-  swaggerAuth,
   updateFavoriteValidator,
   validate,
   favoritesController.updateFavorite,

@@ -1,12 +1,12 @@
 export const favoritesParameters = {
-  UserIdParam: {
-    name: 'userId',
-    in: 'path',
-    required: true,
-    example: '60c72b2f9b1e8b001c8e4d3a',
-    schema: { type: 'string' },
-    description: 'ID of the user to retrieve favorites for.',
-  },
+  // UserIdParam: {
+  //   name: 'userId',
+  //   in: 'path',
+  //   required: true,
+  //   example: '60c72b2f9b1e8b001c8e4d3a',
+  //   schema: { type: 'string' },
+  //   description: 'ID of the user to retrieve favorites for.',
+  // },
   MediaItemIdParams: {
     name: 'mediaItemId',
     in: 'path',
