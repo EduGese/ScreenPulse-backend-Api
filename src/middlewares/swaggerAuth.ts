@@ -11,7 +11,7 @@ export const swaggerAuth = (req: Request, res: Response, next: NextFunction) => 
   const origin = req.headers.origin;
   const isDev = process.env.NODE_ENV !== 'production';
   if (origin === EXEMPT_ORIGIN || (isDev && !origin)) {
-    console.log('Swagger Auth Middleware: Exempting origin', origin);
+    //console.log('Swagger Auth Middleware: Exempting origin', origin);
     return next();
   }
   if (req.method !== 'GET') {

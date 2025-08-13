@@ -6,7 +6,7 @@
     "description": "ScreenPulse API documentation.",
     "contact": {
       "name": "Eduardo González",
-      "email": "your@email.com",
+      "email": "eddugonz@gmail.com",
       "url": "https://github.com/EduGese/ScreenPulse-backend-Api"
     }
   },
@@ -20,18 +20,14 @@
       "description": "Live server"
     }
   ],
-  "security": [
-    {
-      "ApiKeyAuth": []
-    }
-  ],
+  "security": [],
   "components": {
     "securitySchemes": {
-      "ApiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-api-key",
-        "description": "API key for writing operations on ScreenPulse API. You can obtain it contacting the administrator. Key will be validated when performing requests to endpoints that modify data. For read-only operations, the API key is not required."
+      "BearerToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Bearer token for user authentication. This JWT token is obtained by successfully logging in via the /api/user/login endpoint. It must be included in the Authorization header as \"Bearer <token>\" when making requests to endpoints that require authentication, such as favorites management. This token is not required for public endpoints like user registration or login."
       }
     },
     "schemas": {
@@ -695,6 +691,28 @@
             "example": 409
           }
         }
+      },
+      "Unauthorized": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "No token provided"
+          },
+          "code": {
+            "type": "string",
+            "example": "AUTH_MISSING_TOKEN"
+          },
+          "status": {
+            "type": "intege",
+            "example": 401
+          }
+        },
+        "required": [
+          "error",
+          "code",
+          "status"
+        ]
       }
     },
     "parameters": {
@@ -749,16 +767,6 @@
           "type": "string"
         },
         "description": "IMDb ID of the media item (e.g., tt1375666)."
-      },
-      "UserIdParam": {
-        "name": "userId",
-        "in": "path",
-        "required": true,
-        "example": "60c72b2f9b1e8b001c8e4d3a",
-        "schema": {
-          "type": "string"
-        },
-        "description": "ID of the user to retrieve favorites for."
       },
       "MediaItemIdParams": {
         "name": "mediaItemId",
@@ -845,23 +853,18 @@
     }
   },
   "paths": {
-    "/api/favorites/{userId}": {
+    "/api/favorites": {
       "post": {
         "security": [
           {
-            "ApiKeyAuth": []
+            "BearerToken": []
           }
         ],
         "tags": [
           "Favorites"
         ],
         "summary": "Create a new favorite",
-        "description": "Create a new favorite for a user.",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/UserIdParam"
-          }
-        ],
+        "description": "Create a new favorite for a user. UserId extracted from JWT auth token.",
         "requestBody": {
           "required": true,
           "content": {
@@ -910,6 +913,39 @@
               }
             }
           },
+          "401": {
+            "description": "Missing, expired or invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unauthorized"
+                },
+                "examples": {
+                  "TokenMissing": {
+                    "value": {
+                      "error": "No token provided",
+                      "code": "AUTH_MISSING_TOKEN",
+                      "status": 401
+                    }
+                  },
+                  "TokenExpired": {
+                    "value": {
+                      "error": "Token expired",
+                      "code": "AUTH_TOKEN_EXPIRED",
+                      "status": 401
+                    }
+                  },
+                  "TokenInvalid": {
+                    "value": {
+                      "error": "Invalid token",
+                      "code": "AUTH_INVALID_TOKEN",
+                      "status": 401
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "User not found",
             "content": {
@@ -945,7 +981,7 @@
       "get": {
         "security": [
           {
-            "ApiKeyAuth": []
+            "BearerToken": []
           }
         ],
         "tags": [
@@ -954,9 +990,6 @@
         "summary": "Get user's favorites",
         "description": "Retrieve a paginated list of a user's favorites, total count, current page, and page size with optional filtering and sorting.",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/UserIdParam"
-          },
           {
             "$ref": "#/components/parameters/FavoritesPageParam"
           },
@@ -1037,11 +1070,11 @@
         }
       }
     },
-    "/api/favorites/{id}/{userId}": {
+    "/api/favorites/{id}": {
       "delete": {
         "security": [
           {
-            "ApiKeyAuth": []
+            "BearerToken": []
           }
         ],
         "tags": [
@@ -1052,9 +1085,6 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/MediaItemIdParams"
-          },
-          {
-            "$ref": "#/components/parameters/UserIdParam"
           }
         ],
         "responses": {
@@ -1145,7 +1175,7 @@
       "patch": {
         "security": [
           {
-            "ApiKeyAuth": []
+            "BearerToken": []
           }
         ],
         "tags": [
@@ -1156,9 +1186,6 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/MediaItemIdParams"
-          },
-          {
-            "$ref": "#/components/parameters/UserIdParam"
           }
         ],
         "requestBody": {
@@ -1279,7 +1306,6 @@
     },
     "/api/omdb": {
       "get": {
-        "security": [],
         "tags": [
           "Omdb"
         ],
@@ -1377,7 +1403,6 @@
     },
     "/api/omdb/{id}": {
       "get": {
-        "security": [],
         "tags": [
           "Omdb"
         ],
@@ -1424,11 +1449,6 @@
     },
     "/api/user/login": {
       "post": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
         "tags": [
           "User"
         ],
@@ -1490,11 +1510,6 @@
     },
     "/api/user/register": {
       "post": {
-        "security": [
-          {
-            "ApiKeyAuth": []
-          }
-        ],
         "tags": [
           "User"
         ],

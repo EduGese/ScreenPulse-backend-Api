@@ -38,25 +38,9 @@ export const createFavoriteValidator = [
     .withMessage('Poster is required')
     .isURL()
     .withMessage('Poster must be a valid URL'),
-  param('userId')
-    .trim()
-    .notEmpty()
-    .withMessage('userId is required')
-    .isString()
-    .withMessage('userId must be a string')
-    .isMongoId()
-    .withMessage('userId must be a valid MongoDB ObjectId'),
 ];
 
 export const getFavoritesValidator = [
-  param('userId')
-    .trim()
-    .notEmpty()
-    .withMessage('userId is required')
-    .isString()
-    .withMessage('userId must be a string')
-    .isMongoId()
-    .withMessage('userId must be a valid MongoDB ObjectId'),
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('pageSize')
     .optional()
@@ -86,14 +70,6 @@ export const deleteFavoriteValidator = [
     .withMessage('Item id must be a string')
     .isMongoId()
     .withMessage('Item id must be a valid MongoDB ObjectId'),
-  param('userId')
-    .trim()
-    .notEmpty()
-    .withMessage('userId is required')
-    .isString()
-    .withMessage('userId must be a string')
-    .isMongoId()
-    .withMessage('userId must be a valid MongoDB ObjectId'),
 ];
 export const updateFavoriteValidator = [
   param('id')
@@ -104,14 +80,6 @@ export const updateFavoriteValidator = [
     .withMessage('Item id must be a string')
     .isMongoId()
     .withMessage('Item id must be a valid MongoDB ObjectId'),
-  param('userId')
-    .trim()
-    .notEmpty()
-    .withMessage('userId is required')
-    .isString()
-    .withMessage('userId must be a string')
-    .isMongoId()
-    .withMessage('userId must be a valid MongoDB ObjectId'),
   body('description')
     .exists({ checkNull: true })
     .withMessage('Description is required')

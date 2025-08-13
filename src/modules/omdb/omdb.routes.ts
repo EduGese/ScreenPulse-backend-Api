@@ -18,7 +18,6 @@ const _router = express.Router();
  * @swagger
  * /api/omdb:
  *   get:
- *     security: []
  *     tags:
  *       - Omdb
  *     summary: Search media items in OMDB
@@ -79,7 +78,6 @@ _router.get('/', fetchingOmdbMoviesValidator, validate, omdbController.getOmdbIt
  * @swagger
  * /api/omdb/{id}:
  *   get:
- *     security: []
  *     tags:
  *       - Omdb
  *     summary: Get detailed info for a media item

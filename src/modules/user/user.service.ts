@@ -1,5 +1,10 @@
 import userSchema from '../../models/user';
-import { User, UserLoginResponse, UserRegisterDTO, UserRegisterResponse } from '../../interfaces/user.interface';
+import {
+  User,
+  UserLoginResponse,
+  UserRegisterDTO,
+  UserRegisterResponse,
+} from '../../interfaces/user.interface';
 import bcriptjs from 'bcryptjs';
 import jsonwebtoken from 'jsonwebtoken';
 import { ApiError } from '../../errors/apiError';
@@ -33,7 +38,7 @@ class UserService {
    * @returns {Promise<User>} The created user object.
    * @throws {ApiError} If a user with the same email already exists.
    */
-  async registerUser(userData: UserRegisterDTO ): Promise<UserRegisterResponse> {
+  async registerUser(userData: UserRegisterDTO): Promise<UserRegisterResponse> {
     const userExist = await userSchema.findOne({ email: userData.email });
     if (userExist) {
       throw new ApiError(409, 'User already exists', 'USER_EXISTS');
@@ -58,9 +63,8 @@ class UserService {
   private static createToken(user: User): string {
     const payload = {
       user_id: user._id,
-      user_role: user.role,
     };
-    return jsonwebtoken.sign(payload, process.env.TOKEN_SECRET || 'token');
+    return jsonwebtoken.sign(payload, process.env.TOKEN_SECRET || 'token', { expiresIn: '1h' });
   }
 }
 
