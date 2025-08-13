@@ -251,21 +251,17 @@ export const favoritesSchema = {
     properties: {
       error: {
         type: 'string',
-        example: 'No token provided'
+        example: 'No token provided',
       },
       code: {
         type: 'string',
-        example: 'AUTH_MISSING_TOKEN'
+        example: 'AUTH_MISSING_TOKEN',
       },
       status: {
         type: 'intege',
-        example: 401
-      }
+        example: 401,
+      },
     },
-    required: [
-      'error',
-      'code',
-      'status'
-    ]
-  }
+    required: ['error', 'code', 'status'],
+  },
 };

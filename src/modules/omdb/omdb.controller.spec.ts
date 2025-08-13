@@ -39,16 +39,11 @@ describe('OmdbController', () => {
       await OmdbController.getOmdbItemMediaList(
         req as Request,
         res as Response,
-        next as NextFunction
+        next as NextFunction,
       );
 
       // Verificaciones
-      expect(omdbService.getOmdbItemMediaList).toHaveBeenCalledWith(
-        'matrix',
-        'movie',
-        '1999',
-        '1'
-      );
+      expect(omdbService.getOmdbItemMediaList).toHaveBeenCalledWith('matrix', 'movie', '1999', '1');
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(mockResponse);
       expect(next).not.toHaveBeenCalled();
@@ -67,7 +62,7 @@ describe('OmdbController', () => {
       await OmdbController.getOmdbItemMediaList(
         req as Request,
         res as Response,
-        next as NextFunction
+        next as NextFunction,
       );
 
       expect(omdbService.getOmdbItemMediaList).toHaveBeenCalledWith('unknown', 'movie', '', '1');
@@ -80,13 +75,18 @@ describe('OmdbController', () => {
   describe('getOmdbItemMediaInfo', () => {
     it('should return 200 and OMDb media info on success', async () => {
       req.params = { id: 'tt1375666' };
-      const mockResponse = { Title: 'Inception', Year: '2010', imdbID: 'tt1375666', Response: 'True' };
+      const mockResponse = {
+        Title: 'Inception',
+        Year: '2010',
+        imdbID: 'tt1375666',
+        Response: 'True',
+      };
       (omdbService.getOmdbItemMediaInfo as jest.Mock).mockResolvedValue(mockResponse);
 
       await OmdbController.getOmdbItemMediaInfo(
         req as Request,
         res as Response,
-        next as NextFunction
+        next as NextFunction,
       );
 
       expect(omdbService.getOmdbItemMediaInfo).toHaveBeenCalledWith('tt1375666');
@@ -103,7 +103,7 @@ describe('OmdbController', () => {
       await OmdbController.getOmdbItemMediaInfo(
         req as Request,
         res as Response,
-        next as NextFunction
+        next as NextFunction,
       );
 
       expect(omdbService.getOmdbItemMediaInfo).toHaveBeenCalledWith('unknown');

@@ -82,7 +82,7 @@ const _router = express.Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/FavoriteAlreadyExists'
- *       500: 
+ *       500:
  *         description: Internal server error
  *         content:
  *           application/json:
@@ -90,13 +90,7 @@ const _router = express.Router();
  *               $ref: '#/components/schemas/InternalServerError'
  */
 
-_router.post(
-  '/',
-  userAuth,
-  createFavoriteValidator,
-  validate,
-  favoritesController.createFavorite,
-);
+_router.post('/', userAuth, createFavoriteValidator, validate, favoritesController.createFavorite);
 
 /**
  * @swagger
@@ -152,13 +146,7 @@ _router.post(
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-_router.get(
-  '/',
-  userAuth,
-  getFavoritesValidator,
-  validate,
-  favoritesController.getFavorites,
-);
+_router.get('/', userAuth, getFavoritesValidator, validate, favoritesController.getFavorites);
 
 /**
  * @swagger

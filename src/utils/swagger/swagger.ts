@@ -30,16 +30,16 @@ export const options = {
         description: 'Live server',
       },
     ],
-    security: [
-    ],
+    security: [],
     components: {
       securitySchemes: {
         BearerToken: {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          description: 'Bearer token for user authentication. This JWT token is obtained by successfully logging in via the /api/user/login endpoint. It must be included in the Authorization header as "Bearer <token>" when making requests to endpoints that require authentication, such as favorites management. This token is not required for public endpoints like user registration or login.'
-        }
+          description:
+            'Bearer token for user authentication. This JWT token is obtained by successfully logging in via the /api/user/login endpoint. It must be included in the Authorization header as "Bearer <token>" when making requests to endpoints that require authentication, such as favorites management. This token is not required for public endpoints like user registration or login.',
+        },
       },
       schemas: {
         ...userSchemas,

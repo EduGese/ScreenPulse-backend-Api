@@ -13,7 +13,11 @@ class FavoritesController {
    * @returns {Promise<void>}
    * @throws {ApiError} If the user is not found or the favorite already exists for this user.
    */
-  async createFavorite(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  async createFavorite(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const userId = req.userId!;
       const createdFavorite = await favoritesService.createFavorite(userId, req.body);
@@ -67,7 +71,11 @@ class FavoritesController {
    * @param {express.Next} next is the middleware to continue with code execution
    * @returns {Promise<void>} Returns a success message if the operation was successful.
    */
-  async deleteFavorite(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  async deleteFavorite(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const userId = req.userId!;
       await favoritesService.deleteFavorite(req.params.id, userId);
@@ -86,7 +94,11 @@ class FavoritesController {
    * @param {express.Next} next is the middleware to continue with code execution
    * @returns {Promise<void>} Returns the updated favorite item.
    */
-  async updateFavorite(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  async updateFavorite(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const userId = req.userId!;
       const updatedItem = await favoritesService.updateFavorite(

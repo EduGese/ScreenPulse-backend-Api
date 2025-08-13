@@ -2,7 +2,11 @@ import cors from 'cors';
 import config from '../config/config';
 import { env } from 'process';
 
-const allowedOrigins = [config.client.url, 'https://edugese.github.io',  env.SWAGGER_LOCAL_URL || 'http://localhost:9000'];
+const allowedOrigins = [
+  config.client.url,
+  'https://edugese.github.io',
+  env.SWAGGER_LOCAL_URL || 'http://localhost:9000',
+];
 
 export function isAllowedOrigin(origin?: string): boolean {
   if (!origin) return true;

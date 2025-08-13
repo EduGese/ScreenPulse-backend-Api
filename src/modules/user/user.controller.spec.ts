@@ -32,7 +32,7 @@ describe('UserController', () => {
           _id: '1',
           email: 'test@example.com',
           name: 'Test User',
-        }
+        },
       };
       (UserService.loginUser as jest.Mock).mockResolvedValue(mockResponse);
 

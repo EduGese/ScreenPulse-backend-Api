@@ -1,8 +1,8 @@
 jest.mock('../config/config', () => ({
   __esModule: true,
   default: {
-    client: { url: 'http://localhost:4200' }
-  }
+    client: { url: 'http://localhost:4200' },
+  },
 }));
 
 import { isAllowedOrigin } from './cors';
