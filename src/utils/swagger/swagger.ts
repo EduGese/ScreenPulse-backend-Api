@@ -31,9 +31,6 @@ export const options = {
       },
     ],
     security: [
-      // {
-      //   ApiKeyAuth: [],
-      // },
     ],
     components: {
       securitySchemes: {
