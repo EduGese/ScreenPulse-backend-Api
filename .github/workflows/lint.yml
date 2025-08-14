@@ -23,3 +23,5 @@ jobs:
         run: npm run lint
       - name: Run Jest tests
         run: npm test
+      - name: Generate Swagger Documentation
+        run: npm run generate:swagger
