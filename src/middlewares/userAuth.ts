@@ -8,7 +8,6 @@ export function userAuth(req: AuthenticatedRequest, res: Response, next: NextFun
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    console.log('No token provided in request headers');
     return next(new ApiError(401, 'No token provided', 'AUTH_MISSING_TOKEN'));
   }
 
@@ -18,11 +17,9 @@ export function userAuth(req: AuthenticatedRequest, res: Response, next: NextFun
     next();
   } catch (err) {
     if (err instanceof TokenExpiredError) {
-      console.log('Token expired');
       return next(new ApiError(401, 'Token expired', 'AUTH_TOKEN_EXPIRED'));
     }
     if (err instanceof JsonWebTokenError) {
-      console.log('JWT error:', err.message);
       return next(new ApiError(401, 'Invalid token', 'AUTH_INVALID_TOKEN'));
     }
     return next(new ApiError(500, 'Authentication error', 'AUTH_ERROR'));
