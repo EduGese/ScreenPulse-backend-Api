@@ -21,7 +21,6 @@ class FavoritesController {
     try {
       const userId = req.userId!;
       const createdFavorite = await favoritesService.createFavorite(userId, req.body);
-      console.log('Created favorite:', createdFavorite);
       res.status(201).json(createdFavorite);
     } catch (error: unknown) {
       next(error);
