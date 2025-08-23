@@ -14,8 +14,11 @@
     "lint": "eslint --fix --ext .ts src",
     "format": "prettier --write \"src/**/*.{js,ts,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,ts,json,md}\"",
-    "prepare": "husky install",
-    "generate:swagger": "ts-node src/scripts/generate-swagger-json.ts"
+    "prepare": "husky install || exit 0",
+    "generate:swagger": "ts-node src/scripts/generate-swagger-json.ts",
+    "build:docker": "docker build -t screenpulse-api .",
+    "start:dev-container": "docker run --env-file .env -e NODE_ENV=development -p 9000:9000 screenpulse-api",
+    "start:prod-container": "docker run --env-file .env.production -e NODE_ENV=production -p 9000:9000 screenpulse-api"
   },
   "keywords": [],
   "author": "",
