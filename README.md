@@ -29,10 +29,19 @@ cd ScreenPulse-backend-Api
 ```bash
 npm install
 ```
-3. **Set up environment variables**
-Copy the example file and configure your variables
-> _See the [Configuration](#-configuration) section for required environment variables._
-> Edit .env with your specific configuration
+3. **Set up environment variables**  
+Create a `.env` file in the root directory. This file is required to configure the application's environment-specific settings such as database credentials, API keys, server ports, and security tokens. Without these, the application will not run correctly.
+
+> _Refer to the [Configuration](#-configuration) section below for all required variables and example settings._
+
+---
+
+##### Notes on `.env` and `.env.production` files
+
+- `.env` is used for local development settings.
+- `.env.production` can be used to specify production-specific environment variables if you manage different configurations for development and production environments.
+- Ensure both files are created and properly configured if your deployment or local setup requires it.
+- These files should **never** be committed to version control to protect sensitive information.
 
 4. **Start the development server**
 ```bash
