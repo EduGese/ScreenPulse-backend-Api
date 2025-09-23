@@ -108,6 +108,18 @@ curl -X 'GET' \
 
 - [ScreenPulse Frontend App](https://github.com/EduGese/ScreenPulse-frontApp) — Angular web client for this API.
 
+## 📚 Complete Documentation
+
+For comprehensive technical documentation, architecture details, and development guides, visit our **[Technical Documentation](https://deepwiki.com/EduGese/ScreenPulse-backend-Api/1-overview)**.
+
+The documentation includes:
+- **API Reference** with detailed endpoint documentation and examples
+- **System Architecture** with visual diagrams and design patterns
+- **Development Guides** covering workflow and best practices
+- **Security & Middleware** implementation details
+- **Database Models** and data flow documentation
+
+This external documentation provides deep technical insights beyond the scope of this README.
 
 ## ⚙️ Quality Assurance & Unit Testing Workflow
 
