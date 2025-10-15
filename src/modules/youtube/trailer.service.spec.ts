@@ -1,27 +1,31 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import TrailerService from './trailer.service';
-import { TmdbFindResponse, TmdbIdResult, TmdbVideo } from '../../interfaces/youtubeVideoSearchResultItem.interface';
+import {
+  TmdbFindResponse,
+  TmdbIdResult,
+  TmdbVideo,
+} from '../../interfaces/youtubeVideoSearchResultItem.interface';
 import axios from 'axios';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('TrailerService', () => {
-
   beforeEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
   });
 
   describe('getTrailerUrl', () => {
-
     it('returns YouTube URL when trailer is found', async () => {
       const tmdbData: TmdbIdResult = { id: 42, mediaType: 'movie' };
       const youtubeUrl = 'https://www.youtube.com/watch?v=abc123';
 
-      const findTmdbIdSpy = jest.spyOn(Object.getPrototypeOf(TrailerService), 'findTmdbId')
+      const findTmdbIdSpy = jest
+        .spyOn(Object.getPrototypeOf(TrailerService), 'findTmdbId')
         .mockResolvedValue(tmdbData);
-      const fetchTrailerSpy = jest.spyOn(Object.getPrototypeOf(TrailerService), 'fetchTrailerFromTmdb')
+      const fetchTrailerSpy = jest
+        .spyOn(Object.getPrototypeOf(TrailerService), 'fetchTrailerFromTmdb')
         .mockResolvedValue(youtubeUrl);
 
       const result = await TrailerService.getTrailerUrl('tt1375666');
@@ -32,9 +36,13 @@ describe('TrailerService', () => {
     });
 
     it('returns null when findTmdbId returns null', async () => {
-      const findTmdbIdSpy = jest.spyOn(Object.getPrototypeOf(TrailerService), 'findTmdbId')
+      const findTmdbIdSpy = jest
+        .spyOn(Object.getPrototypeOf(TrailerService), 'findTmdbId')
         .mockResolvedValue(null);
-      const fetchTrailerSpy = jest.spyOn(Object.getPrototypeOf(TrailerService), 'fetchTrailerFromTmdb');
+      const fetchTrailerSpy = jest.spyOn(
+        Object.getPrototypeOf(TrailerService),
+        'fetchTrailerFromTmdb',
+      );
 
       const result = await TrailerService.getTrailerUrl('tt0000000');
 
@@ -46,9 +54,9 @@ describe('TrailerService', () => {
     it('returns null when fetchTrailerFromTmdb returns null', async () => {
       const tmdbData: TmdbIdResult = { id: 42, mediaType: 'movie' };
 
-      jest.spyOn(Object.getPrototypeOf(TrailerService), 'findTmdbId')
-        .mockResolvedValue(tmdbData);
-      jest.spyOn(Object.getPrototypeOf(TrailerService), 'fetchTrailerFromTmdb')
+      jest.spyOn(Object.getPrototypeOf(TrailerService), 'findTmdbId').mockResolvedValue(tmdbData);
+      jest
+        .spyOn(Object.getPrototypeOf(TrailerService), 'fetchTrailerFromTmdb')
         .mockResolvedValue(null);
 
       const result = await TrailerService.getTrailerUrl('tt1375666');
@@ -57,7 +65,8 @@ describe('TrailerService', () => {
     });
 
     it('returns null when findTmdbId throws error', async () => {
-      jest.spyOn(Object.getPrototypeOf(TrailerService), 'findTmdbId')
+      jest
+        .spyOn(Object.getPrototypeOf(TrailerService), 'findTmdbId')
         .mockRejectedValue(new Error('Network error'));
 
       const result = await TrailerService.getTrailerUrl('tt1375666');
@@ -68,20 +77,18 @@ describe('TrailerService', () => {
     it('returns null when fetchTrailerFromTmdb throws error', async () => {
       const tmdbData: TmdbIdResult = { id: 42, mediaType: 'movie' };
 
-      jest.spyOn(Object.getPrototypeOf(TrailerService), 'findTmdbId')
-        .mockResolvedValue(tmdbData);
-      jest.spyOn(Object.getPrototypeOf(TrailerService), 'fetchTrailerFromTmdb')
+      jest.spyOn(Object.getPrototypeOf(TrailerService), 'findTmdbId').mockResolvedValue(tmdbData);
+      jest
+        .spyOn(Object.getPrototypeOf(TrailerService), 'fetchTrailerFromTmdb')
         .mockRejectedValue(new Error('API error'));
 
       const result = await TrailerService.getTrailerUrl('tt1375666');
 
       expect(result).toBeNull();
     });
-
   });
 
   describe('findTmdbId', () => {
-
     it('returns TMDB ID and media type when movie is found', async () => {
       const imdbId = 'tt1375666';
       const tmdbResponse: TmdbFindResponse = {
@@ -92,10 +99,8 @@ describe('TrailerService', () => {
 
       const result = await TrailerService['findTmdbId'](imdbId);
 
-
       expect(result).toEqual({ id: 550, mediaType: 'movie' });
       expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-
     });
 
     it('returns TMDB ID and media type when TV show is found', async () => {
@@ -110,7 +115,6 @@ describe('TrailerService', () => {
 
       expect(result).toEqual({ id: 1399, mediaType: 'tv' });
       expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-
     });
 
     it('returns null when no results are found', async () => {
@@ -144,7 +148,6 @@ describe('TrailerService', () => {
 
       expect(result).toEqual({ id: 550, mediaType: 'movie' });
       expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-
     });
 
     it('returns null when movie_results and tv_results are undefined', async () => {
@@ -155,7 +158,6 @@ describe('TrailerService', () => {
       const result = await TrailerService['findTmdbId'](imdbId);
       expect(result).toBeNull();
       expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-
     });
 
     it('returns null if movie_results is undefined and tv_results is empty', async () => {
@@ -174,8 +176,6 @@ describe('TrailerService', () => {
       const result = await TrailerService['findTmdbId'](imdbId);
       expect(result).toBeNull();
     });
-
-
   });
 
   describe('fetchTrailerFromTmdb', () => {
@@ -183,7 +183,13 @@ describe('TrailerService', () => {
       const tmdbData: TmdbIdResult = { id: 1399, mediaType: 'tv' };
       const tmdbResponse: { results: TmdbVideo[] } = {
         results: [
-          { name: 'Season Trailer', key: 'tv123', site: 'YouTube', type: 'Trailer', published_at: '2021-01-01' },
+          {
+            name: 'Season Trailer',
+            key: 'tv123',
+            site: 'YouTube',
+            type: 'Trailer',
+            published_at: '2021-01-01',
+          },
         ],
       };
 
@@ -198,7 +204,13 @@ describe('TrailerService', () => {
       const tmdbData: TmdbIdResult = { id: 42, mediaType: 'movie' };
       const tmdbResponse: { results: TmdbVideo[] } = {
         results: [
-          { name: 'Season Trailer', key: 'movie123', site: 'YouTube', type: 'Trailer', published_at: '2021-01-01' },
+          {
+            name: 'Season Trailer',
+            key: 'movie123',
+            site: 'YouTube',
+            type: 'Trailer',
+            published_at: '2021-01-01',
+          },
         ],
       };
       mockedAxios.get.mockResolvedValueOnce({ data: tmdbResponse });
@@ -210,21 +222,32 @@ describe('TrailerService', () => {
     it('returns null when no trailer is found', async () => {
       const tmdbData: TmdbIdResult = { id: 42, mediaType: 'movie' };
       const tmdbResponse: { results: TmdbVideo[] } = {
-        results: []
+        results: [],
       };
       mockedAxios.get.mockResolvedValueOnce({ data: tmdbResponse });
       const result = await TrailerService['fetchTrailerFromTmdb'](tmdbData);
       expect(result).toBeNull();
       expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-
     });
 
     it('returns null when only non-YouTube videos found', async () => {
       const tmdbData: TmdbIdResult = { id: 42, mediaType: 'movie' };
       const tmdbResponse: { results: TmdbVideo[] } = {
         results: [
-          { name: 'Official Trailer', key: 'vim123', site: 'Vimeo', type: 'Trailer', published_at: '2020-01-01' },
-          { name: 'Another Trailer', key: 'dm456', site: 'Dailymotion', type: 'Trailer', published_at: '2020-02-01' },
+          {
+            name: 'Official Trailer',
+            key: 'vim123',
+            site: 'Vimeo',
+            type: 'Trailer',
+            published_at: '2020-01-01',
+          },
+          {
+            name: 'Another Trailer',
+            key: 'dm456',
+            site: 'Dailymotion',
+            type: 'Trailer',
+            published_at: '2020-02-01',
+          },
         ],
       };
 
@@ -239,8 +262,20 @@ describe('TrailerService', () => {
       const tmdbData: TmdbIdResult = { id: 42, mediaType: 'movie' };
       const tmdbResponse: { results: TmdbVideo[] } = {
         results: [
-          { name: 'Official Trailer', key: 'case123', site: 'YouTube', type: 'TRAILER', published_at: '2020-01-01' },
-          { name: 'Another', key: 'case456', site: 'YouTube', type: 'trailer', published_at: '2020-02-01' },
+          {
+            name: 'Official Trailer',
+            key: 'case123',
+            site: 'YouTube',
+            type: 'TRAILER',
+            published_at: '2020-01-01',
+          },
+          {
+            name: 'Another',
+            key: 'case456',
+            site: 'YouTube',
+            type: 'trailer',
+            published_at: '2020-02-01',
+          },
         ],
       };
 
@@ -254,17 +289,15 @@ describe('TrailerService', () => {
     it('throws error and logs on timeout', async () => {
       const tmdbData: TmdbIdResult = { id: 42, mediaType: 'movie' };
       const timeoutError = Object.assign(new Error('timeout of 5000ms exceeded'), {
-        code: 'ECONNABORTED'
+        code: 'ECONNABORTED',
       });
 
       mockedAxios.get.mockRejectedValueOnce(timeoutError);
       jest.spyOn(axios, 'isAxiosError').mockReturnValue(true);
 
-      await expect(TrailerService['fetchTrailerFromTmdb'](tmdbData))
-        .rejects.toThrow('timeout of 5000ms exceeded');
+      await expect(TrailerService['fetchTrailerFromTmdb'](tmdbData)).rejects.toThrow(
+        'timeout of 5000ms exceeded',
+      );
     });
-
-
   });
-
 });

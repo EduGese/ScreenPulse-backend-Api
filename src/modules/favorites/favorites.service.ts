@@ -132,7 +132,7 @@ class FavoritesService {
     const user = await userSchema.findById(userId);
     if (!user) throw new ApiError(404, 'User not found', 'USER_NOT_FOUND');
 
-    user.favorites = user.favorites.filter((fav) => fav.toString() !== movieId);
+    user.favorites = user.favorites.filter(fav => fav.toString() !== movieId);
     await user.save();
 
     favorite.user = favorite.user.filter(
@@ -206,7 +206,7 @@ class FavoritesService {
     favorites: MediaItemDocument[],
   ): Promise<MediaItemWithMetaData[]> {
     return Promise.all(
-      favorites.map(async (favorite) => {
+      favorites.map(async favorite => {
         const descriptionDoc = await descriptionSchema.findOne({
           userId,
           favoriteId: favorite._id,

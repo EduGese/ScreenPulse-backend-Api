@@ -55,4 +55,3 @@ export interface OmdbItemDetail {
 }
 
 export type OmdbItemDetailResponse = OmdbItemDetail | OmdbErrorResponse;
- 
