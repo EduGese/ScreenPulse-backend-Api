@@ -18,7 +18,6 @@ class TrailerService {
    */
   public async getTrailerUrl(imdbId: string): Promise<string | null> {
     try {
-
       const tmdbData = await this.findTmdbId(imdbId);
       if (!tmdbData) return null;
 
@@ -35,16 +34,13 @@ class TrailerService {
    */
   private async findTmdbId(imdbId: string): Promise<TmdbIdResult | null> {
     try {
-      const response = await axios.get<TmdbFindResponse>(
-        `${this.baseUrl}/find/${imdbId}`,
-        {
-          params: {
-            api_key: this.apiKey,
-            external_source: 'imdb_id',
-          },
-          timeout: 5000,
-        }
-      );
+      const response = await axios.get<TmdbFindResponse>(`${this.baseUrl}/find/${imdbId}`, {
+        params: {
+          api_key: this.apiKey,
+          external_source: 'imdb_id',
+        },
+        timeout: 5000,
+      });
 
       const { movie_results, tv_results } = response.data;
 
@@ -69,10 +65,7 @@ class TrailerService {
    * @param tmdbData - TMDB ID and media type
    * @returns YouTube URL if trailer found, null otherwise
    */
-  private async fetchTrailerFromTmdb({
-    id,
-    mediaType,
-  }: TmdbIdResult): Promise<string | null> {
+  private async fetchTrailerFromTmdb({ id, mediaType }: TmdbIdResult): Promise<string | null> {
     // eslint-disable-next-line no-useless-catch
     try {
       const path = mediaType === 'movie' ? 'movie' : 'tv';
@@ -83,14 +76,13 @@ class TrailerService {
             api_key: this.apiKey,
           },
           timeout: 5000,
-        }
+        },
       );
 
       const videos = response.data.results;
       const trailer = videos?.find(
-        (video) =>
-          video.site === this.officialYouTubeSite &&
-          video.type?.toLowerCase() === this.trailerType
+        video =>
+          video.site === this.officialYouTubeSite && video.type?.toLowerCase() === this.trailerType,
       );
 
       return trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : null;

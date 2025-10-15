@@ -7,7 +7,6 @@ import {
 } from '../../interfaces/omdb.interface';
 import TrailerService from '../youtube/trailer.service';
 
-
 class OmdbService {
   async getOmdbItemMediaList(
     title: string,
@@ -32,7 +31,7 @@ class OmdbService {
         },
       );
       if (response.data.Response === 'True') {
-        response.data.Search = response.data.Search.map((item) => {
+        response.data.Search = response.data.Search.map(item => {
           const newItem: OmdbSearchItem = {
             title: item.Title,
             year: item.Year,
@@ -80,7 +79,6 @@ class OmdbService {
     }
     throw new ApiError(500, 'Internal server error', 'INTERNAL_ERROR');
   }
-
 }
 
 export default new OmdbService();
