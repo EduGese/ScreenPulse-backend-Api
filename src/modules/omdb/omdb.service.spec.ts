@@ -1,8 +1,19 @@
 import OmdbService from './omdb.service';
-import axios from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
+import TrailerService from '../youtube/trailer.service';
+import { OmdbErrorResponse, OmdbItemDetail } from '../../interfaces/omdb.interface';
+import { ApiError } from '../../errors/apiError';
+
+jest.mock('../youtube/trailer.service', () => ({
+  __esModule: true,
+  default: {
+    getTrailerUrl: jest.fn().mockResolvedValue(null),
+  },
+}));
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedTrailerService = TrailerService as jest.Mocked<typeof TrailerService>;
 
 describe('OmdbService', () => {
   afterEach(() => {
@@ -154,23 +165,48 @@ describe('OmdbService', () => {
   });
 
   describe('getOmdbItemMediaInfo', () => {
-    it('returns movie details on success', async () => {
-      const apiResponse = {
-        data: {
-          Title: 'Inception',
-          Year: '2010',
-          imdbID: 'tt1375666',
-          Type: 'movie',
-          Poster: 'inception.jpg',
-        },
-      };
-      mockedAxios.get.mockResolvedValue(apiResponse);
+    const mockDetail: OmdbItemDetail = {
+      Title: 'Inception',
+      Year: '2010',
+      Rated: 'PG-13',
+      Released: '16 Jul 2010',
+      Runtime: '148 min',
+      Genre: 'Action, Adventure, Sci-Fi',
+      Director: 'Christopher Nolan',
+      Writer: 'Christopher Nolan',
+      Actors: 'Leonardo DiCaprio, Joseph Gordon-Levitt, Elliot Page',
+      Plot: 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task …',
+      Language: 'English, Japanese, French',
+      Country: 'United States, United Kingdom',
+      Awards: 'Won 4 Oscars. 159 wins & 220 nominations total',
+      Poster: 'https://example.com/poster.jpg',
+      Ratings: [
+        { Source: 'Internet Movie Database', Value: '8.8/10' },
+        { Source: 'Rotten Tomatoes', Value: '87%' },
+        { Source: 'Metacritic', Value: '74/100' },
+      ],
+      Metascore: '74',
+      imdbRating: '8.8',
+      imdbVotes: '2,731,250',
+      imdbID: 'tt1375666',
+      Type: 'movie',
+      DVD: 'N/A',
+      BoxOffice: '$292,587,330',
+      Production: 'N/A',
+      Website: 'N/A',
+      Response: 'True',
+      youtubeURLTrailer: null,
+    };
+
+    it('returns movie details with null youtubeURLTrailer when no trailer found', async () => {
+      const axiosResponse = {
+        data: mockDetail,
+      } as Partial<AxiosResponse<OmdbItemDetail>> as AxiosResponse<OmdbItemDetail>;
+
+      mockedAxios.get.mockResolvedValue(axiosResponse);
+      mockedTrailerService.getTrailerUrl.mockResolvedValue(null);
 
       const result = await OmdbService.getOmdbItemMediaInfo('tt1375666');
-      if (result.Response === 'True') {
-        expect(result.Title).toBe('Inception');
-        expect(result.imdbID).toBe('tt1375666');
-      }
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
         process.env.OMDB_URL || '',
@@ -181,14 +217,122 @@ describe('OmdbService', () => {
           }),
         }),
       );
+      expect(mockedTrailerService.getTrailerUrl).toHaveBeenCalledWith('tt1375666');
+      expect(result.Response).toBe('True');
+      expect((result as OmdbItemDetail).youtubeURLTrailer).toBeNull();
     });
 
-    it('handles errors in getOmdbItemMediaInfo as generic ApiError', async () => {
-      mockedAxios.get.mockRejectedValue(new Error('Network Down'));
-      await expect(OmdbService.getOmdbItemMediaInfo('tt0000001')).rejects.toMatchObject({
-        status: 500,
-        code: 'INTERNAL_ERROR',
-      });
+    it('returns movie details with trailer when TrailerService returns a URL', async () => {
+      const axiosResponse = {
+        data: mockDetail,
+      } as Partial<AxiosResponse<OmdbItemDetail>> as AxiosResponse<OmdbItemDetail>;
+
+      mockedAxios.get.mockResolvedValue(axiosResponse);
+      mockedTrailerService.getTrailerUrl.mockResolvedValue('https://youtube/trailer123');
+
+      const result = await OmdbService.getOmdbItemMediaInfo('tt1375666');
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        process.env.OMDB_URL || '',
+        expect.objectContaining({
+          params: expect.objectContaining({
+            apikey: process.env.OMDB_APIKEY,
+            i: 'tt1375666',
+          }),
+        }),
+      );
+      expect(mockedTrailerService.getTrailerUrl).toHaveBeenCalledWith('tt1375666');
+      expect(result.Response).toBe('True');
+      expect((result as OmdbItemDetail).youtubeURLTrailer).toBe('https://youtube/trailer123');
+    });
+    it('returns error response when OMDB returns Response False', async () => {
+      const AxiosResponse: OmdbErrorResponse = {
+        Response: 'False',
+        Error: 'Movie not found!',
+      };
+      mockedAxios.get.mockResolvedValue({
+        data: AxiosResponse,
+      } as AxiosResponse<OmdbErrorResponse>);
+
+      const result = await OmdbService.getOmdbItemMediaInfo('tt0000000');
+
+      expect(result).toEqual(AxiosResponse);
+      expect(mockedTrailerService.getTrailerUrl).not.toHaveBeenCalled();
+    });
+
+    it('throws error when axios fails', async () => {
+      mockedAxios.get.mockRejectedValue(new Error('Network error'));
+
+      await expect(OmdbService.getOmdbItemMediaInfo('tt1375666')).rejects.toThrow();
+    });
+  });
+
+  describe('handleAxiosError', () => {
+    it('throws Timeout ApiError when axios error has ECONNABORTED code', () => {
+      const timeoutError: Partial<AxiosError> = {
+        code: 'ECONNABORTED',
+        message: 'timeout of 5000ms exceeded',
+        isAxiosError: true,
+      };
+      jest.spyOn(axios, 'isAxiosError').mockReturnValue(true);
+
+      expect(() => OmdbService['handleAxiosError'](timeoutError)).toThrow(ApiError);
+
+      try {
+        OmdbService['handleAxiosError'](timeoutError);
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiError);
+        expect((error as ApiError).status).toBe(504);
+        expect((error as ApiError).code).toBe('TIMEOUT');
+        expect((error as ApiError).message).toBe('OMDB request timed out');
+      }
+    });
+
+    it('throws Internal ApiError for generic axios error', () => {
+      const genericAxiosError: Partial<AxiosError> = {
+        code: 'ERR_BAD_REQUEST',
+        message: 'Request failed with status code 400',
+        isAxiosError: true,
+      };
+      jest.spyOn(axios, 'isAxiosError').mockReturnValue(true);
+
+      expect(() => OmdbService['handleAxiosError'](genericAxiosError)).toThrow(ApiError);
+
+      try {
+        OmdbService['handleAxiosError'](genericAxiosError);
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiError);
+        expect((error as ApiError).status).toBe(500);
+        expect((error as ApiError).code).toBe('INTERNAL_ERROR');
+        expect((error as ApiError).message).toBe('Internal server error');
+      }
+    });
+
+    it('throws Internal ApiError for non-axios error', () => {
+      const standardError: Error = new Error('Unknown error');
+      jest.spyOn(axios, 'isAxiosError').mockReturnValue(false);
+
+      try {
+        OmdbService['handleAxiosError'](standardError);
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiError);
+        expect((error as ApiError).status).toBe(500);
+        expect((error as ApiError).code).toBe('INTERNAL_ERROR');
+        expect((error as ApiError).message).toBe('Internal server error');
+      }
+    });
+
+    it('throws Internal ApiError for unknown error type', () => {
+      const unknownError = { custom: 'error object' };
+      jest.spyOn(axios, 'isAxiosError').mockReturnValue(false);
+
+      try {
+        OmdbService['handleAxiosError'](unknownError);
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiError);
+        expect((error as ApiError).status).toBe(500);
+        expect((error as ApiError).code).toBe('INTERNAL_ERROR');
+      }
     });
   });
 });

@@ -50,6 +50,7 @@ export interface OmdbItemDetail {
   BoxOffice: string;
   Production: string;
   Website: string;
+  youtubeURLTrailer?: string | null;
   Response: 'True';
 }
 

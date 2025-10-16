@@ -13,7 +13,7 @@ export const fetchingOmdbMoviesValidator = [
   query('year')
     .trim()
     .optional()
-    .custom((value) => {
+    .custom(value => {
       if (value === '') return true;
       const year = Number(value);
       const currentYear = new Date().getFullYear();

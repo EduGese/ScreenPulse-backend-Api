@@ -5,6 +5,7 @@ import {
   OmdbItemMediaListResponse,
   OmdbSearchItem,
 } from '../../interfaces/omdb.interface';
+import TrailerService from '../youtube/trailer.service';
 
 class OmdbService {
   async getOmdbItemMediaList(
@@ -30,7 +31,7 @@ class OmdbService {
         },
       );
       if (response.data.Response === 'True') {
-        response.data.Search = response.data.Search.map((item) => {
+        response.data.Search = response.data.Search.map(item => {
           const newItem: OmdbSearchItem = {
             title: item.Title,
             year: item.Year,
@@ -48,7 +49,7 @@ class OmdbService {
   }
   async getOmdbItemMediaInfo(id: string): Promise<OmdbItemDetailResponse> {
     try {
-      const response: AxiosResponse<OmdbItemDetailResponse> = await axios.get(
+      const { data }: AxiosResponse<OmdbItemDetailResponse> = await axios.get(
         process.env.OMDB_URL || '',
         {
           params: {
@@ -57,7 +58,14 @@ class OmdbService {
           },
         },
       );
-      return response.data;
+
+      if (data.Response === 'False') {
+        return data;
+      }
+
+      const youtubeURLTrailer = await TrailerService.getTrailerUrl(data.imdbID);
+
+      return { ...data, youtubeURLTrailer };
     } catch (error) {
       this.handleAxiosError(error);
     }

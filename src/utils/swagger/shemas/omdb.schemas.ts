@@ -60,6 +60,7 @@ export const omdbSchemas = {
       Production: { type: 'string', example: 'Warner Bros.' },
       Website: { type: 'string', example: 'http://www.inceptionmovie.com/' },
       Response: { type: 'string', example: 'True' },
+      youtubeURLTrailer: { type: 'string', example: "https://www.youtube.com/watch?v=cdx31ak4KbQ" },
     },
   },
   OmdbErrorResponse: {

@@ -397,6 +397,10 @@
           "Response": {
             "type": "string",
             "example": "True"
+          },
+          "youtubeURLTrailer": {
+            "type": "string",
+            "example": "https://www.youtube.com/watch?v=cdx31ak4KbQ"
           }
         }
       },

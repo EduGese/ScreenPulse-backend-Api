@@ -11,7 +11,6 @@ import corsMiddleware from './middlewares/cors';
 const app = express();
 const port = config.server.port;
 
-
 //CORS Middleware
 app.use(corsMiddleware);
 
@@ -38,4 +37,4 @@ app.listen(port, () => {
 mongoose
   .connect(config.mongo.url || '')
   .then(() => console.log('connected to Mongobd Atlas'))
-  .catch((error) => console.error(error));
+  .catch(error => console.error(error));
