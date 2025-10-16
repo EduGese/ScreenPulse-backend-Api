@@ -36,8 +36,17 @@ export const createFavoriteValidator = [
     .trim()
     .notEmpty()
     .withMessage('Poster is required')
-    .isURL()
-    .withMessage('Poster must be a valid URL'),
+    .custom((value) => {
+      if (value === 'N/A') {
+        return true;
+      }
+      try {
+        new URL(value);
+        return true;
+      } catch {
+        throw new Error('Poster must be a valid URL or "N/A"');
+      }
+    })
 ];
 
 export const getFavoritesValidator = [
