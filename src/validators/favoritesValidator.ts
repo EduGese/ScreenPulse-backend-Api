@@ -14,9 +14,7 @@ export const createFavoriteValidator = [
     .notEmpty()
     .withMessage('Year is required')
     .isString()
-    .withMessage('Year must be a string')
-    .isInt({ min: 1900, max: new Date().getFullYear() })
-    .withMessage('Year must be a valid year between 1900 and the current year'),
+    .withMessage('Year must be a string'),
   body('imdbID')
     .trim()
     .notEmpty()
