@@ -258,7 +258,7 @@ export const favoritesSchema = {
         example: 'AUTH_MISSING_TOKEN',
       },
       status: {
-        type: 'intege',
+        type: 'integer',
         example: 401,
       },
     },
